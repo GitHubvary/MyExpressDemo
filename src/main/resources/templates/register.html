@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>注册页</title>
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}" href="../static/layui/css/layui.css" media="all">
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="../static/css/style.css" media="all">
+    <link rel="stylesheet" th:href="@{/css/register.css}" href="../static/css/register.css" media="all">
+    <script th:src="@{/layui/layui.js}" src="../static/layui/layui.js"></script>
+</head>
+<body class="register-body layui-container">
+
+<div class="register-main layui-bg-gray">
+
+    <header class="layui-elip">注册</header>
+
+    <!-- 表单选项 -->
+    <form class="layui-form" id="registryUsernameForm">
+        <!--用户名-->
+        <div class="layui-form-item">
+            <label class="layadmin-user-login-icon layui-icon layui-icon-username"></label>
+            <input type="text" name="username" required lay-verify="required" placeholder="请输入用户名" autocomplete="off"
+                   class="layui-input" onkeyup="this.value=this.value.replace(/\s+/g,'')">
+        </div>
+        <!-- 密码 -->
+        <div class="layui-form-item">
+            <label class="layadmin-user-login-icon layui-icon layui-icon-password"></label>
+            <input type="password" name="password" required lay-verify="required" placeholder="请输入密码" autocomplete="off"
+                   class="layui-input" onkeyup="this.value=this.value.replace(/\s+/g,'')">
+        </div>
+        <!-- 确认密码 -->
+        <div class="layui-form-item">
+            <label class="layadmin-user-login-icon layui-icon layui-icon-password"></label>
+            <input type="password"  required lay-verify="required|confirmPass" placeholder="请确认密码" autocomplete="off"
+                   class="layui-input" onkeyup="this.value=this.value.replace(/\s+/g,'')">
+        </div>
+        <!--选择注册身份-->
+        <div class="layui-form-item">
+            <label class="layadmin-user-login-icon layui-icon layui-icon-user" style="z-index: 1;"></label>
+            <select name="role" lay-verify="required" >
+                    <option value="">请选择注册身份</option>
+                    <option value="0">用户</option>
+                    <option value="1">配送员</option>
+            </select>
+        </div>
+
+
+        <div class="layui-input-inline login-btn">
+            <button type="submit" lay-submit lay-filter="sub" class="layui-btn">注册</button>
+        </div>
+        <hr/>
+        <p style="margin-left:110px;"><a href="/login" class="fl">已有账号？立即登录</a></p>
+    </form>
+</div>
+<script th:src="@{/js/jquery-3.4.1/jquery-3.4.1.min.js}" src="../static/js/jquery-3.4.1/jquery-3.4.1.min.js" charset="utf-8" type="text/javascript"></script>
+<script th:src="@{/layui/layui.all.js}" src="../static/layui/layui.all.js" charset="utf-8" type="text/javascript"></script>
+<script th:src="@{/js/jq-module/jquery.particleground.min.js}" src="../static/js/jq-module/jquery.particleground.min.js"></script>
+<script th:src="@{/js/jquery.validate.min.js}" src="/js/jquery.validate.min.js"></script>
+<script th:src="@{/js/http.js}" src="/js/http.js"></script>
+<script type="text/javascript">
+    layui.use(['form','layer'], function() {
+        var form = layui.form;
+        var $ = layui.$;
+        var layer = layui.layer;
+
+        $(document).ready(function(){
+            $(".layui-container").particleground({
+                dotColor:'#5cbdaa',
+                lineColor:'#5cbdaa'
+            });
+        });
+
+        form.verify({
+
+            confirmPass:function(value){
+
+                if($('input[name=password]').val() !== value)
+
+                    return '两次密码输入不一致！';
+
+            }
+
+        });
+
+
+        form.on('submit(sub)',function () {
+            sendJson(HTTP.POST, "/user/register", $("#registryUsernameForm").serialize() , false, function (res) {
+                if (res.code === 0) {
+                    layer.msg("注册成功,即将跳转到登录页", {icon: 1},3000);
+                    // setTimeout(new function(){ top.location.href='/';console.log("执行到跳转但是没成功！")},"3000");
+                    window.setTimeout("location.href='/';", 0);
+                }
+            }, function () {
+                layer.msg("用户名已被注册，请更换其他用户名", {icon: 2});
+            });
+        });
+
+    });
+
+</script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+.register-body {
+    position: relative;
+    background: #009688;
+}
+
+.register-box {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    width: 320px;
+    height: 241px;
+    max-height: 300px;
+}
+
+.register-body .register-box h3 {
+    color: #444;
+    font-size: 22px;
+    font-weight: 100;
+    text-align: center;
+}
+
+.register-box .layui-input[type='number'] {
+    display: inline-block;
+    width: 50%;
+    vertical-align: top;
+}
+
+.register-box img {
+    display: inline-block;
+    width: 46%;
+    height: 38px;
+    border: none;
+    vertical-align: top;
+    cursor: pointer;
+    margin-left: 4%;
+}
+
+.register-box button.btn-reset {
+    width: 95px;
+}
+
+.register-box button.btn-submit {
+    width: 190px;
+}
+
+.register-main {
+    position: fixed;
+    top: 20%;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 350px;
+    height: 380px;
+    margin: 0 auto;
+    /*border: #0C0C0C 1px solid;*/
+    /*padding: 15px;*/
+    background-color:#fff;
+    border:1px solid #fff;
+    border-radius:3px;
+    padding:14px 20px;
+    box-shadow:0 0 8px #eeeeee;
+}
+
+.register-main header {
+    /*margin-top: 150px;*/
+    height: 35px;
+    line-height: 35px;
+    font-size: 30px;
+    font-weight: 100;
+    text-align: center;
+}
+
+.register-main header, .register-main form, .register-main form .layui-input-inline {
+    margin-bottom: 15px;
+}
+
+.register-main form .layui-input-inline, .register-main form .layui-input-inline input, .register-main form .layui-input-inline button {
+    width: 100%;
+}
+
+.register-main form .register-btn {
+    margin-bottom: 5px;
+}
+
+/*layui组件*/
+.layui-form-item {
+    position: relative;
+}
+
+.layadmin-user-login-icon {
+    position: absolute;
+    left: 1px;
+    top: 1px;
+    width: 38px;
+    line-height: 36px;
+    text-align: center;
+    color: #d2d2d2;
+}
+
+.layui-form-item .layui-input {
+    padding-left: 38px;
+}
+
+
+.layui-container {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+html, body {width: 100%;height: 100%;overflow: hidden}

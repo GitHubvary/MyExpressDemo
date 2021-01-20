@@ -1,0 +1,177 @@
+<!DOCTYPE html >
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>登录-快递代拿系统</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}" href="../static/layui/css/layui.css" media="all">
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="../static/css/style.css" media="all">
+    <link rel="stylesheet" th:href="@{/css/login.css}" href="../static/css/login.css" media="all">
+    <script th:src="@{/layui/layui.js}" src="../static/layui/layui.js"></script>
+
+</head>
+<body class="login-body layui-container">
+
+<div class="login-main layui-bg-gray">
+
+    <header class="layui-elip">登录</header>
+    <form class="layui-form" th:action="@{/user/login}" method="post">
+        <!--用户名-->
+        <div class="layui-form-item">
+            <label class="layadmin-user-login-icon layui-icon layui-icon-username"></label>
+            <input type="text" name="username" required lay-verify="required" placeholder="请输入用户名" autocomplete="off"
+                   class="layui-input" onkeyup="this.value=this.value.replace(/\s+/g,'')">
+        </div>
+        <!--密码-->
+        <div class="layui-form-item">
+            <label class="layadmin-user-login-icon layui-icon layui-icon-password"></label>
+            <input type="password" name="password" required lay-verify="required" placeholder="请输入密码" autocomplete="off"
+                   class="layui-input" onkeyup="this.value=this.value.replace(/\s+/g,'')">
+        </div>
+        <!--验证码-->
+        <div class="layui-form-item">
+            <div class="layui-col-xs7">
+                <label class="layadmin-user-login-icon layui-icon layui-icon-vercode"></label>
+                <input type="text" name="vercode"  required  placeholder="请输入验证码" autocomplete="off"
+                       class="layui-input" id="input-val" onkeyup="this.value=this.value.replace(/\s+/g,'')">
+            </div>
+            <div class="layui-col-xs5">
+                <canvas  id="canvas" width="120" height="36"></canvas>
+            </div>
+
+        </div>
+
+        <div class="layui-input-inline login-btn">
+            <button lay-submit lay-filter="login" class="layui-btn" id="btn">登录</button>
+        </div>
+        <hr/>
+        <p style="margin-left:110px;"><a href="/register" class="fl">没有账号？立即注册</a></p>
+    </form>
+</div>
+<script th:src="@{/js/jquery-3.4.1/jquery-3.4.1.min.js}" src="../static/js/jquery-3.4.1/jquery-3.4.1.min.js" charset="utf-8" type="text/javascript"></script>
+<script th:src="@{/layui/layui.all.js}" src="../static/layui/layui.all.js" charset="utf-8" type="text/javascript"></script>
+<script th:src="@{/js/jq-module/jquery.particleground.min.js}" src="../static/js/jq-module/jquery.particleground.min.js"></script>
+<script  th:inline="javascript">
+
+    var flag = [[${flag}]];   //登录验证标志
+
+    layui.use(['form','layer'],function () {
+
+        var $ = layui.$;
+        var form = layui.form;
+        var layer = layui.layer;
+        // var flag = [[${flag}]];
+
+        // 登录过期的时候，跳出ifram框架
+        if (top.location != self.location) top.location = self.location;
+
+
+        $(document).ready(function(){
+            $(".layui-container").particleground({
+                dotColor:'#5cbdaa',
+                lineColor:'#5cbdaa'
+            });
+        });
+
+        $(function(){  //校对验证码
+            var show_num = [];
+            draw(show_num);
+
+            if(flag !=null) {
+                layer.msg(flag,{icon: 5,time:1000});
+                $("#input-val").val('');
+                draw(show_num);
+            }
+
+            $("#canvas").on('click',function(){
+                draw(show_num);
+            })
+            $("#btn").on('click',function(){
+                var val = $("#input-val").val().toLowerCase();
+                var num = show_num.join("");
+
+                if(val==''){
+
+                    layer.msg("请输入验证码！",{icon: 5,time:1000});
+                    draw(show_num);
+                }else if(val == num){
+
+                }else{
+                    layer.msg("验证码错误！请重新输入！",{icon: 5,time:1000});
+                    $("#input-val").val('');
+                    draw(show_num);
+                }
+
+                // if (flag != null)
+                // {
+                //     layer.msg(flag,{icon: 5,time:1000});
+                //     $("#input-val").val('');
+                //     draw(show_num);
+                // }
+
+            })
+        })
+
+        function draw(show_num) {    //画图获取验证码
+            var canvas_width=$('#canvas').width();
+            var canvas_height=$('#canvas').height();
+            var canvas = document.getElementById("canvas");//获取到canvas的对象，演员
+            var context = canvas.getContext("2d");//获取到canvas画图的环境，演员表演的舞台
+            canvas.width = canvas_width;
+            canvas.height = canvas_height;
+            var sCode = "A,B,C,E,F,G,H,J,K,L,M,N,P,Q,R,S,T,W,X,Y,Z,1,2,3,4,5,6,7,8,9,0";
+            var aCode = sCode.split(",");
+            var aLength = aCode.length;//获取到数组的长度
+
+            for (var i = 0; i <= 3; i++) {
+                var j = Math.floor(Math.random() * aLength);//获取到随机的索引值
+                var deg = Math.random() * 30 * Math.PI / 180;//产生0~30之间的随机弧度
+                var txt = aCode[j];//得到随机的一个内容
+                show_num[i] = txt.toLowerCase();
+                var x = 10 + i * 20;//文字在canvas上的x坐标
+                var y = 20 + Math.random() * 8;//文字在canvas上的y坐标
+                context.font = "bold 23px 微软雅黑";
+
+                context.translate(x, y);
+                context.rotate(deg);
+
+                context.fillStyle = randomColor();
+                context.fillText(txt, 0, 0);
+
+                context.rotate(-deg);
+                context.translate(-x, -y);
+            }
+            for (var i = 0; i <= 5; i++) { //验证码上显示线条
+                context.strokeStyle = randomColor();
+                context.beginPath();
+                context.moveTo(Math.random() * canvas_width, Math.random() * canvas_height);
+                context.lineTo(Math.random() * canvas_width, Math.random() * canvas_height);
+                context.stroke();
+            }
+            for (var i = 0; i <= 30; i++) { //验证码上显示小点
+                context.strokeStyle = randomColor();
+                context.beginPath();
+                var x = Math.random() * canvas_width;
+                var y = Math.random() * canvas_height;
+                context.moveTo(x, y);
+                context.lineTo(x + 1, y + 1);
+                context.stroke();
+            }
+        }
+
+        function randomColor() {//得到随机的颜色值
+            var r = Math.floor(Math.random() * 256);
+            var g = Math.floor(Math.random() * 256);
+            var b = Math.floor(Math.random() * 256);
+            return "rgb(" + r + "," + g + "," + b + ")";
+        }
+
+
+    })
+</script>
+
+
+</body>
+</html>
