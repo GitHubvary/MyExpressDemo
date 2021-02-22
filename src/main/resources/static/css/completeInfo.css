@@ -1,0 +1,72 @@
+
+
+.container{
+    background: url("../images/bg-banner.jpg") no-repeat;
+    background-size:100% 100%;
+    background-attachment:fixed;
+    /*font-size: 1rem;*/
+    text-align: center;
+    vertical-align: middle;
+}
+
+.title{
+    margin-top: 15vh;
+    color: white;
+    font-size: 24px;
+}
+
+.main {
+    /*position: fixed;*/
+    /*top: 25%;*/
+    /*right: 0;*/
+    /*bottom: 0;*/
+    /*left: 0;*/
+    /*width: 350px;*/
+    /*!*height: 300px;*!*/
+    /*margin: 0 auto;*/
+    /*!*border: #0C0C0C 1px solid;*!*/
+    /*!*padding: 15px;*!*/
+    /*background-color:#fff;*/
+    /*border:1px solid #fff;*/
+    /*border-radius:3px;*/
+    /*padding:14px 20px;*/
+    /*box-shadow:0 0 8px #eeeeee;*/
+
+    width: 30vw;
+    min-height: 40vh;
+    margin: 5vh auto;
+    padding: 20px;
+    border-radius: 7px;
+}
+
+
+
+.pull-right {
+    margin-right: 10px;
+    margin-top: -15px;
+    float: right!important;
+}
+
+.layui-form-item .layui-input {
+    padding-left: 38px;
+}
+
+.layui-form-item {
+    position: relative;
+}
+
+.layadmin-user-login-icon {
+    position: absolute;
+    left: 1px;
+    top: 1px;
+    width: 38px;
+    line-height: 36px;
+    text-align: center;
+    color: #d2d2d2;
+}
+
+.main form .layui-input-inline, .main form .layui-input-inline input, .main form .layui-input-inline button {
+    width: 100%;
+}
+
+

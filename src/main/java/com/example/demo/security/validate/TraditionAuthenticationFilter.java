@@ -1,0 +1,57 @@
+package com.example.demo.security.validate;
+
+import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
+import org.springframework.security.web.authentication.RememberMeServices;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+/**
+ * Description:
+ * date: 2021/2/5 17:00
+ */
+public class TraditionAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
+    /**
+     * 是否仅 POST 方式
+     */
+    private boolean postOnly = true;
+
+    private String SPRING_SECURITY_FORM_USERNAME_KEY = "username";
+
+    private String SPRING_SECURITY_FORM_PASSWORD_KEY = "password";
+
+    protected TraditionAuthenticationFilter() {
+        // 传统登录的请求
+        super(new AntPathRequestMatcher("/form-login", "POST"));
+
+    }
+
+    @Override
+    public Authentication attemptAuthentication(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws AuthenticationException {
+        if (postOnly && !"POST".equals(httpServletRequest.getMethod())) {
+            throw new AuthenticationServiceException(
+                    "Authentication method not supported: " + httpServletRequest.getMethod());
+        }
+        String username = httpServletRequest.getParameter(SPRING_SECURITY_FORM_USERNAME_KEY);
+        String password = httpServletRequest.getParameter(SPRING_SECURITY_FORM_PASSWORD_KEY);
+
+        TraditionAuthenticationToken authRequest = new TraditionAuthenticationToken(username, password);
+
+        // Allow subclasses to set the "details" property
+        setDetails(httpServletRequest, authRequest);
+
+        return this.getAuthenticationManager().authenticate(authRequest);
+    }
+
+
+    private void setDetails(HttpServletRequest request, TraditionAuthenticationToken authRequest) {
+        authRequest.setDetails(authenticationDetailsSource.buildDetails(request));
+    }
+}

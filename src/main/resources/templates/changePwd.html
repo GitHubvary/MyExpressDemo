@@ -1,0 +1,110 @@
+<!DOCTYPE html >
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>修改密码</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" th:href="@{/lib/layui-v2.5.5/css/layui.css}" href="../static/lib/layui-v2.5.5/css/layui.css" media="all">
+    <link rel="stylesheet" th:href="@{/css/public.css}" href="../static/css/public.css" media="all">
+    <script th:src="@{/layui/layui.js}" src="../static/layui/layui.js"></script>
+    <style>
+        .layui-form-item .layui-input-company {width: auto;padding-right: 10px;line-height: 38px;}
+    </style>
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+
+        <form class="layui-form layuimini-form" id="changePasswordForm">
+            <div class="layui-form-item">
+                <label class="layui-form-label required">旧的密码</label>
+                <div class="layui-input-block">
+                    <input type="password" name="old_password" required lay-verify="required" lay-reqtext="旧的密码不能为空" placeholder="请输入旧的密码"  class="layui-input" onkeyup="this.value=this.value.replace(/\s+/g,'')">
+                    <tip>填写自己账号的旧的密码。</tip>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label required">新的密码</label>
+                <div class="layui-input-block">
+                    <input type="password" name="new_password" lay-verify="required" lay-reqtext="新的密码不能为空" placeholder="请输入新的密码"  class="layui-input" onkeyup="this.value=this.value.replace(/\s+/g,'')">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label required">新的密码</label>
+                <div class="layui-input-block">
+                    <input type="password" name="again_password" lay-verify="required|confirmPass" lay-reqtext="新的密码不能为空" placeholder="请输入新的密码"  class="layui-input" onkeyup="this.value=this.value.replace(/\s+/g,'')">
+                </div>
+            </div>
+
+
+             <div class="layui-input-block">
+                 <button type="button" class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn">确认保存</button>
+             </div>
+
+        </form>
+    </div>
+</div>
+<script th:src="@{/js/jquery-3.4.1/jquery-3.4.1.min.js}" src="../static/js/jquery-3.4.1/jquery-3.4.1.min.js" charset="utf-8" type="text/javascript"></script>
+<script th:src="@{/layui/layui.all.js}" src="../static/layui/layui.all.js" charset="utf-8" type="text/javascript"></script>
+<!--<script th:src="@{/lib/layui-v2.5.5/layui.js}" src="../lib/layui-v2.5.5/layui.js" charset="utf-8"></script>-->
+<!--<script th:src="@{/js/lay-config.js}" src="../js/lay-config.js?v=1.0.4" charset="utf-8"></script>-->
+<script th:src="@{/js/http.js}" src="../static/js/http.js"></script>
+<script>
+    layui.use(['form','layer'], function () {
+        var form = layui.form,
+            layer = layui.layer,
+            $ = layui.$;
+            // miniTab = layui.miniTab;
+
+        form.verify({
+
+            confirmPass:function(value){
+
+                if($('input[name=new_password]').val() !== value)
+
+                    return '两次密码输入不一致！';
+
+            }
+
+        });
+
+        // //监听提交
+        // form.on('submit(saveBtn)', function (data) {
+        //     var index = layer.alert(JSON.stringify(data.field), {
+        //         title: '最终的提交信息'
+        //     }, function () {
+        //         layer.close(index);
+        //         miniTab.deleteCurrentByIframe();
+        //     });
+        //     return false;
+        // });
+
+        form.on('submit(saveBtn)',function() {
+            sendJson(HTTP.POST, "/password", $("#changePasswordForm").serialize(), false, function (res) {
+                if (res.code === 0) {
+                    // //1、跳转页面在layer.msg里面的end中执行
+                    // layer.msg("密码修改成功!请重新登录!",{
+                    //     icon:1,
+                    //     time: 3000,
+                    //     end: function(){
+                    //         window.setTimeout("window.location.href = '/logout';", 0);
+                    //     }
+                    // });
+                    layer.msg("密码修改成功!请重新登录!", {icon: 1},2000);
+                    // // layer.alert("密码修改成功!请重新登录!", {icon: 1},5000);
+                    window.setTimeout("window.location.href = '/logout';", 3000);
+                } else {
+                    layer.msg(res.msg, {icon: 2});
+                }
+            }, function () {
+                layer.msg("未知错误", {icon: 2});
+            });
+        });
+
+    });
+</script>
+</body>
+</html>

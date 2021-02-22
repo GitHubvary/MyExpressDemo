@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>基本资料</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../static/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="../static/css/public.css" media="all">
+    <style>
+        .layui-form-item .layui-input-company {width: auto;padding-right: 10px;line-height: 38px;}
+    </style>
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+    <h2>基本信息</h2>
+    <hr>
+        <div class="layui-form layuimini-form">
+            <div class="layui-form-item layui-row">
+                <label class="layui-form-label">用户权限</label>
+                <div class="layui-col-md9">
+                    <p class="layui-form-label-col" id="role" th:text="${info.roleName}"></p>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">用户名</label>
+                <div class="layui-input-block">
+                    <p class="layui-form-label-col"  id="username"
+                       th:style="${info.username == null ? 'color:gray' : ''}"
+                       th:text="${info.username != null ? info.username : '您未申请用户名，申请后可以使用用户名密码登陆'}"></p>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">手机号码</label>
+                <div class="layui-input-block">
+                    <p class="layui-form-label-col" id="tel"
+                       th:style="${info.tel == null ? 'color:gray' : ''}"
+                       th:text="${info.tel != null ? info.tel : '您未设置手机号。'}" ></p>
+                </div>
+            </div>
+            <hr>
+            <h2>学校信息</h2>
+            <hr>
+            <div class="layui-form-item">
+                <label class="layui-form-label">学校名称</label>
+                <div class="layui-input-block">
+                    <span class="layui-form-label-col" name="schoolName">华南理工大学广州学院</span>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">学号</label>
+                <div class="layui-input-block">
+                    <span class="layui-form-label-col">13178978</span>
+                </div>
+            </div>
+            <hr>
+            <h2>身份信息</h2>
+            <hr>
+            <div class="layui-form-item">
+                <label class="layui-form-label">真实姓名</label>
+                <div class="layui-input-block">
+                    <span class="layui-form-label-col"  contenteditable="true">黄健</span>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">身份证号</label>
+                <div class="layui-input-block">
+                    <span class="layui-form-label-col">447182999189088899</span>
+                </div>
+            </div>
+            <hr>
+
+            <div class="layui-form-item">
+                <div class="layui-form-label">
+                    <button class="layui-btn layui-btn-warm" id="ModifyInfo">修改信息</button>
+                </div>
+                <div class="layui-form-label">
+                    <button class="layui-btn  layui-btn-disabled" lay-submit lay-filter="saveBtn" id="SaveModify" disabled>保存修改</button>
+                </div>
+                <div class="layui-form-label">
+                    <button class="layui-btn  layui-btn-normal" id="ResetBtn">重置修改</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../static/layui/layui.js" charset="utf-8"></script>
+<script src="../static/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
+<script>
+    layui.use(['form','miniTab'], function () {
+        var form = layui.form,
+            layer = layui.layer,
+            $ = layui.jquery,
+            miniTab = layui.miniTab;
+
+        //监听提交
+        // form.on('submit(saveBtn)', function (data) {
+        //     var index = layer.alert(JSON.stringify(data.field), {
+        //         title: '最终的提交信息'
+        //     }, function () {
+        //         layer.close(index);
+        //         miniTab.deleteCurrentByIframe();
+        //     });
+        //     return false;
+        // });
+
+        //修改信息点击事件
+        $("#ModifyInfo").on("click",function(){
+
+            //点击改变元素为可编辑输入框
+            $("span").html('<input type="email" name="email"  placeholder="请输入邮箱"  value="" class="layui-input">');
+
+            $("#SaveModify").removeClass("layui-btn-disabled").siblings();
+
+            $("#SaveModify").removeAttr("disabled");
+        });
+
+        //保存修改按钮
+        $("#SaveModify").on("click",function () {
+            layer.msg("保存成功！");
+        });
+
+
+        //重置按钮，点击刷新页面
+        $("#ResetBtn").on("click",function(){
+            location.reload();
+        });
+
+
+    });
+</script>
+</body>
+</html>
