@@ -1,4 +1,4 @@
-package com.example.demo.pojo;
+package com.example.demo.domain.enums;
 
 
 import lombok.Getter;

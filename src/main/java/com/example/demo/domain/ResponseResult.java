@@ -1,5 +1,6 @@
-package com.example.demo.pojo;
+package com.example.demo.domain;
 
+import com.example.demo.domain.enums.ResponseErrorCodeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

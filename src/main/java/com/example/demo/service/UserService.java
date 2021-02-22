@@ -1,8 +1,15 @@
 package com.example.demo.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.example.demo.pojo.ResponseResult;
-import com.example.demo.pojo.User;
+import com.example.demo.domain.ResponseResult;
+import com.example.demo.domain.bean.User;
+import com.example.demo.domain.vo.LayuiTableVO;
+import com.example.demo.domain.vo.admin.AdminUserInfoVO;
+import com.example.demo.domain.vo.user.UserInfoVO;
+
+import java.util.Map;
 
 public interface UserService extends IService<User> {
     /**
@@ -24,7 +31,7 @@ public interface UserService extends IService<User> {
      * @param:用户名、密码和身份
      * @return:页面返回状态码
     */
-    ResponseResult registerByName(String username,String password,String role);
+    ResponseResult registerByName(String username,String password);
 
     /**
      * Description:根据用户输入的注册信息判断用户是否存在
@@ -33,4 +40,22 @@ public interface UserService extends IService<User> {
     */
     boolean checkExistByUsername(String username);
 
+    /**
+     * Description:修改密码
+    */
+    ResponseResult resetPassword(Integer userId, String oldPassword, String newPassword);
+
+    /**
+     * 获取用户信息
+     */
+    UserInfoVO getUserInfo(Integer userId);
+
+    /**
+     * 管理员仪表盘展示数据
+     */
+    Map<String, Integer> getAdminDashboardData();
+    /**
+     * 获取 AdminUserInfoVO 列表
+     */
+    LayuiTableVO<AdminUserInfoVO> pageAdminUserInfoVO(Page<User> sysUserPage, QueryWrapper<User> wrapper);
 }

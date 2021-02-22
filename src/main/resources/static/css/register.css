@@ -1,6 +1,8 @@
 .register-body {
     position: relative;
-    background: #009688;
+    background: url("../images/bg-banner.jpg") no-repeat;
+    background-size:100% 100%;
+    background-attachment:fixed;
 }
 
 .register-box {
@@ -48,12 +50,12 @@
 
 .register-main {
     position: fixed;
-    top: 20%;
+    top: 25%;
     right: 0;
     bottom: 0;
     left: 0;
     width: 350px;
-    height: 380px;
+    height: 300px;
     margin: 0 auto;
     /*border: #0C0C0C 1px solid;*/
     /*padding: 15px;*/

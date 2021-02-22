@@ -34,6 +34,7 @@ function sendJson(_type, _url, _data, _async, _successCallback, _errorCallback) 
             _errorCallback(error);
         }
     });
+
 }
 
 function sendArray(_type, _url, _data, _async, _successCallback, _errorCallback) {
