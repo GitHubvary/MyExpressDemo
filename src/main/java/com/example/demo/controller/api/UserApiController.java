@@ -2,7 +2,7 @@ package com.example.demo.controller.api;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.example.demo.common.StringUtils;
+import com.example.demo.common.util.StringUtils;
 import com.example.demo.domain.ResponseResult;
 import com.example.demo.domain.bean.User;
 import com.example.demo.domain.enums.ResponseErrorCodeEnum;
@@ -12,17 +12,21 @@ import com.example.demo.domain.vo.admin.AdminUserInfoVO;
 import com.example.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Description:用户信息 API Controller
  * date: 2021/2/19 18:10
  */
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/user")
+@PreAuthorize("hasRole('ROLE_ADMIN')")
 public class UserApiController {
     @Autowired
     private UserService userService;
@@ -48,7 +52,7 @@ public class UserApiController {
                                                   String isReal, String isEnable, String isLock, String role,
                                                   String id, String username, String tel) {
         QueryWrapper<User> wrapper = new QueryWrapper<>();
-        System.out.println("当前页："+page+"\t每页显示行数："+limit);
+        System.out.println("用户列表当前页："+page+"\t每页显示行数："+limit);
         System.out.println("isReal："+isReal+'\t'+"isEnable："+isEnable+'\t'+"isLock："+isLock+'\t'+"role："+role+'\t'+"id："+id+'\t'+"username："+username+'\t'+"tel："+tel);
         Integer enable = StringUtils.toInteger(isEnable, -1);
         if (enable != -1) {
@@ -98,8 +102,6 @@ public class UserApiController {
      * 改变用户状态
      * @param type 1. 禁用；2：启用；3：冻结；4：解冻
      * @param hour 冻结小时数
-     * @author jitwxs
-     * @date 2019/5/2 13:50
      */
     @PostMapping("/{id}/status")
     public ResponseResult changeStatus(@PathVariable String id, String type, String hour) {
@@ -137,5 +139,26 @@ public class UserApiController {
         } else {
             return ResponseResult.failure(ResponseErrorCodeEnum.OPERATION_ERROR);
         }
+    }
+
+    @GetMapping("/courier-list")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseResult listCourier() {
+        List<User> users = userService.list(new QueryWrapper<User>().eq("role_id", UserRoleEnum.COURIER.getType()));
+        if(users.size() == 0) {
+            return ResponseResult.success();
+        }
+
+        List<Map> result = new ArrayList<>();
+        for(User user : users) {
+            Map<String ,String> map = new HashMap<>();
+            map.put("id", user.getId());
+            map.put("name", userService.getFrontName(user));
+            result.add(map);
+        }
+
+        System.out.println("加载快递员列表："+result);
+
+        return ResponseResult.success(result);
     }
 }

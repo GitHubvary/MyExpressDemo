@@ -60,7 +60,7 @@ public class PageController {
                 response.sendRedirect("/user/user");
                 return;
             case ADMIN:
-                response.sendRedirect("/admin/admin");
+                response.sendRedirect("/admin/main");
                 return;
             case COURIER:
                 response.sendRedirect("/courier/courier");
@@ -77,9 +77,9 @@ public class PageController {
 
     @RequestMapping("/infoSetting")
     public String showInfoPage(@AuthenticationPrincipal User user, ModelMap map){
-        UserInfoVO userInfo = userService.getUserInfo(user.getUid());
+        UserInfoVO userInfo = userService.getUserInfo(user.getId());
         map.put("info", userInfo);
-        return "infoSetting";
+        return "/infoSetting";
     }
 
 

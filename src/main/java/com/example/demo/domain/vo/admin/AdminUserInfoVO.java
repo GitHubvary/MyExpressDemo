@@ -1,14 +1,8 @@
 package com.example.demo.domain.vo.admin;
 
-/**
- * Description:
- * date: 2021/2/19 18:16
- */
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Data;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -18,7 +12,7 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 public class AdminUserInfoVO implements Serializable {
-    private Integer id;
+    private String id;
 
     private String username;
 
@@ -33,6 +27,10 @@ public class AdminUserInfoVO implements Serializable {
      * 是否启用
      */
     private Boolean hasEnable;
+    /**
+     * 用户评分
+     */
+    private String score;
     /**
      * 账户解冻时间
      */

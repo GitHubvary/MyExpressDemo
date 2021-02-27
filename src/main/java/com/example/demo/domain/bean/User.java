@@ -25,8 +25,8 @@ import java.util.Collection;
 public class User implements UserDetails, CredentialsContainer {
 
     //标注主键
-    @TableId(type = IdType.AUTO)
-    private Integer uid;
+    @TableId(type = IdType.UUID)
+    private String id;
 
 
     @TableField("username")

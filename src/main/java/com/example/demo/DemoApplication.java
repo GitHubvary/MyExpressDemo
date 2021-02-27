@@ -9,7 +9,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @SpringBootApplication
-@MapperScan("com.example.demo.mapper")
+//@MapperScan("com.example.demo.mapper")
 public class DemoApplication {
 
     public static void main(String[] args) {

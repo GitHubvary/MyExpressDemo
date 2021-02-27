@@ -3,6 +3,12 @@ body {
     background: #f2f2f2;
 }
 
+
+.modal-footer {
+    padding:15px;
+    text-align:right;
+}
+
 .layuimini-container {
     border: 1px solid #f2f2f2;
     border-radius: 5px;

@@ -1,6 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.common.StringUtils;
+import com.example.demo.common.util.StringUtils;
 import com.example.demo.domain.enums.ResponseErrorCodeEnum;
 import com.example.demo.domain.ResponseResult;
 import com.example.demo.domain.bean.User;
@@ -9,13 +9,9 @@ import com.example.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import javax.servlet.http.HttpSession;
 
 /**
  * Description:
@@ -90,7 +86,7 @@ public class EventController {
         if(StringUtils.isAnyBlank(origin, target)) {
             return ResponseResult.failure(ResponseErrorCodeEnum.PARAMETER_ERROR);
         }
-        return userService.resetPassword(user.getUid(),origin,target);
+        return userService.resetPassword(user.getId(),origin,target);
     }
 
     /**

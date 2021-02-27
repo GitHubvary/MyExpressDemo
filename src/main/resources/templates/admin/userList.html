@@ -16,7 +16,7 @@
         <fieldset class="table-search-fieldset">
             <legend>用户查询</legend>
             <div style="margin: 10px 10px 10px 10px">
-                <form class="layui-form layui-form-pane" action="">
+                <form class="layui-form layui-form-pane">
                     <div class="layui-form-item">
                         <div class="layui-inline">
                             <label class="layui-form-label">用户ID</label>
@@ -89,7 +89,7 @@
         <!--列表工具栏-->
         <script type="text/html" id="toolbarDemo">
             <div class="layui-btn-container">
-                <button class="layui-btn layui-btn-sm data-add-btn" lay-event="refresh"> 刷新 </button>
+                <button class="layui-btn layui-btn-sm data-add-btn layui-btn-primary" lay-event="refresh"> 刷新 </button>
             </div>
         </script>
 
@@ -109,7 +109,7 @@
 
         table.render({
             elem: '#currentTableId',
-            url: '/api/user/list',
+            url: '/user/list',
             toolbar: '#toolbarDemo',
             cellMinWidth: 80,
             defaultToolbar: ['filter', 'exports', 'print', {
@@ -210,11 +210,11 @@
             if(type === 3) {
                 // console.log(id);
                 layer.prompt({title:"冻结小时", formType:0},function(val, index) {
-                    sendJson(HTTP.POST, "/api/user/"+id+"/status", {"type": type, "hour": val}, false, function (res) {
+                    sendJson(HTTP.POST, "/user/"+id+"/status", {"type": type, "hour": val}, false, function (res) {
                         if(res.code === 0) {
                             layer.msg("操作成功",{icon:1});
                             layer.close(index);
-                            table.reload('currentTableId', {url:'/api/user/list', page:1});
+                            table.reload('currentTableId', {url:'/user/list', page:1});
                         } else {
                             layer.msg(res.msg,{icon:2});
                         }
@@ -223,10 +223,10 @@
                     });
                 });
             } else {
-                sendJson(HTTP.POST, "/api/user/"+id+"/status", {"type": type}, false, function (res) {
+                sendJson(HTTP.POST, "/user/"+id+"/status", {"type": type}, false, function (res) {
                     if(res.code === 0) {
                         layer.msg("操作成功",{icon:1});
-                        table.reload('currentTableId', {url:'/api/user/list', page:1});
+                        table.reload('currentTableId', {url:'/user/list', page:1});
                     } else {
                         layer.msg(res.msg,{icon:2});
                     }
@@ -241,7 +241,7 @@
         form.on('submit(data-search-btn)', function () {
             //执行搜索重载
             table.reload('currentTableId', {
-                url:'/api/user/list',
+                url:'/user/list',
                 page: {
                     curr: 1
                 }, where: {
@@ -262,7 +262,7 @@
          * toolbar监听事件
          */
         table.on('toolbar(currentTableFilter)', function (obj) {
-            if (obj.event === 'refresh') {  // 监听添加操作
+            if (obj.event === 'refresh') {  // 监听刷新操作
                 $("#inputId").val("");
                 $("#inputTel").val("");
                 $("#inputUsername").val("");
@@ -272,7 +272,7 @@
                 $("#inputLock").val(-1);
                 form.render(); //重置刷新表单
                 table.reload('currentTableId', {
-                    url:'/api/user/list',
+                    url:'/user/list',
                     page: {curr: 1}, where: {
                         id: null,
                         tel: null,

@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.example.demo.common.CollectionUtils;
-import com.example.demo.common.StringUtils;
+import com.example.demo.common.constant.RedisKeyConstant;
+import com.example.demo.common.util.CollectionUtils;
+import com.example.demo.common.util.StringUtils;
+import com.example.demo.domain.bean.UserEvaluate;
 import com.example.demo.domain.enums.UserRoleEnum;
 import com.example.demo.domain.vo.LayuiTableVO;
 import com.example.demo.domain.vo.admin.AdminUserInfoVO;
@@ -14,8 +16,10 @@ import com.example.demo.mapper.UserMapper;
 import com.example.demo.domain.enums.ResponseErrorCodeEnum;
 import com.example.demo.domain.ResponseResult;
 import com.example.demo.domain.bean.User;
+import com.example.demo.service.UserEvaluateService;
 import com.example.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
@@ -24,6 +28,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import javax.annotation.Resource;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -49,7 +55,10 @@ public class UserSeviceImpl extends ServiceImpl<UserMapper, User> implements Use
     private DataSourceTransactionManager transactionManager;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    private UserEvaluateService userEvaluateService;
+
+    @Resource
+    private RedisTemplate<String, User> redisTemplate;
 
     /**
      * Description:查询用户信息，校验输入登录用户信息是否存在且正确
@@ -133,7 +142,7 @@ public class UserSeviceImpl extends ServiceImpl<UserMapper, User> implements Use
      * @return:
     */
     @Override
-    public ResponseResult resetPassword(Integer userId, String oldPassword, String newPassword) {
+    public ResponseResult resetPassword(String userId, String oldPassword, String newPassword) {
         User user = getById(userId);
 
         if(!oldPassword.equals(user.getPassword())) {
@@ -152,7 +161,7 @@ public class UserSeviceImpl extends ServiceImpl<UserMapper, User> implements Use
     }
 
     @Override
-    public UserInfoVO getUserInfo(Integer userId) {
+    public UserInfoVO getUserInfo(String userId) {
         User user = getById(userId);
         UserRoleEnum userRole = user.getRole();
 
@@ -202,6 +211,31 @@ public class UserSeviceImpl extends ServiceImpl<UserMapper, User> implements Use
         return result;
     }
 
+    @Override
+    public String getFrontName(String userId) {
+        return getFrontName(getById(userId));
+    }
+
+    @Override
+    public String getFrontName(User user) {
+
+        String username = user.getUsername();
+
+        return username;
+    }
+
+    @Override
+    public User getById(Serializable id) {
+        User user = (User) redisTemplate.opsForHash().get(RedisKeyConstant.SYS_USER, id);
+        if(user != null) {
+            return user;
+        }
+        user = super.getById(id);
+
+        redisTemplate.opsForHash().put(RedisKeyConstant.SYS_USER, id, user);
+        return user;
+    }
+
     private List<AdminUserInfoVO> convert(List<User> users) {
         if(CollectionUtils.isListEmpty(users)) {
             return Collections.emptyList();
@@ -212,7 +246,7 @@ public class UserSeviceImpl extends ServiceImpl<UserMapper, User> implements Use
 
     private AdminUserInfoVO convert(User user) {
         AdminUserInfoVO vo = AdminUserInfoVO.builder()
-                .id(user.getUid())
+                .id(user.getId())
                 .username(user.getUsername())
                 .tel(user.getTel())
                 .role(user.getRole().getType())
@@ -223,6 +257,11 @@ public class UserSeviceImpl extends ServiceImpl<UserMapper, User> implements Use
         LocalDateTime lockDate = user.getLockDate();
         if(lockDate != null && LocalDateTime.now().isBefore(lockDate)) {
             vo.setLockDate(lockDate);
+        }
+
+        UserEvaluate userEvaluate = userEvaluateService.getById(user.getId());
+        if(userEvaluate != null && userEvaluate.getCount() > 0) {
+            vo.setScore(userEvaluate.getScore().toPlainString());
         }
 
         return vo;

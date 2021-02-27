@@ -1,11 +1,13 @@
 package com.example.demo.controller.admin;
 
+import com.example.demo.common.constant.RedisKeyConstant;
 import com.example.demo.domain.ResponseResult;
 import com.example.demo.domain.bean.User;
 import com.example.demo.domain.enums.ResponseErrorCodeEnum;
 import com.example.demo.domain.vo.user.UserInfoVO;
 import com.example.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.annotation.Resource;
 import java.util.Map;
 
 /**
@@ -28,12 +31,15 @@ public class AdminPageController {
     @Autowired
     private UserService userService;
 
-    @RequestMapping("/admin")
+    @Resource
+    private RedisTemplate<String, User> redisTemplate;
+
+    @RequestMapping("/main")
     public String showAdminPage(@AuthenticationPrincipal User user, ModelMap map){
         String frontName = user.getUsername();
         map.put("frontName", frontName);
 
-        return "admin/admin";
+        return "admin/main";
     }
 
     /**
@@ -42,6 +48,7 @@ public class AdminPageController {
     @RequestMapping("/dashboard")
     public String showDashboardPage(@AuthenticationPrincipal User user, ModelMap map) {
         String frontName = user.getUsername();
+        System.out.println("admin/dashboard："+frontName);
         map.put("frontName", frontName);
 
         Map<String, Integer> data = userService.getAdminDashboardData();
@@ -60,8 +67,9 @@ public class AdminPageController {
 
     @RequestMapping("/info")
     public String showInfoPage(@AuthenticationPrincipal User user, ModelMap map){
-        UserInfoVO userInfo = userService.getUserInfo(user.getUid());
+        UserInfoVO userInfo = userService.getUserInfo(user.getId());
         map.put("info", userInfo);
+        System.out.println(map);
         return "admin/info";
     }
 
@@ -77,6 +85,8 @@ public class AdminPageController {
             return ResponseResult.failure(ResponseErrorCodeEnum.OPERATION_ERROR);
         }
         System.out.println("修改后的号码："+user.getTel());
+        redisTemplate.opsForHash().delete(RedisKeyConstant.SYS_USER,user.getId(),user);
+        System.out.println(redisTemplate.opsForHash().get(RedisKeyConstant.SYS_USER, user.getId()));
         return ResponseResult.success();
     }
 
@@ -84,8 +94,32 @@ public class AdminPageController {
      * 用户管理页面
      */
     @RequestMapping("/userList")
-    public String showUser(@AuthenticationPrincipal User user) {
+    public String showUser() {
         return "admin/userList";
+    }
+
+    /**
+     * 订单管理页面
+     */
+    @RequestMapping("/order")
+    public String showOrder() {
+        return "admin/order";
+    }
+
+    /**
+     * 反馈管理页面
+     */
+    @RequestMapping("/feedback")
+    public String showFeedback() {
+        return "admin/feedback";
+    }
+
+    /**
+     * 订单回收页面
+     */
+    @RequestMapping("/recycle")
+    public String showRecycle() {
+        return "admin/recycle";
     }
 
 }

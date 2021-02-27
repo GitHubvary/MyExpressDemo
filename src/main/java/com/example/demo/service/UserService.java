@@ -43,12 +43,12 @@ public interface UserService extends IService<User> {
     /**
      * Description:修改密码
     */
-    ResponseResult resetPassword(Integer userId, String oldPassword, String newPassword);
+    ResponseResult resetPassword(String userId, String oldPassword, String newPassword);
 
     /**
      * 获取用户信息
      */
-    UserInfoVO getUserInfo(Integer userId);
+    UserInfoVO getUserInfo(String userId);
 
     /**
      * 管理员仪表盘展示数据
@@ -58,4 +58,12 @@ public interface UserService extends IService<User> {
      * 获取 AdminUserInfoVO 列表
      */
     LayuiTableVO<AdminUserInfoVO> pageAdminUserInfoVO(Page<User> sysUserPage, QueryWrapper<User> wrapper);
+    /**
+     * 获取 frontName
+     */
+    String getFrontName(String userId);
+    /**
+     * 获取 frontName
+     */
+    String getFrontName(User user);
 }
