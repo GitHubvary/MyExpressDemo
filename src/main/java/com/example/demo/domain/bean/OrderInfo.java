@@ -19,7 +19,7 @@ public class OrderInfo {
 
     private String userId;
     /**
-     * 快递单号
+     * 取货吗
      */
     private String odd;
     /**
@@ -39,7 +39,7 @@ public class OrderInfo {
      */
     private String recAddress;
     /**
-     * 快递寄达地址
+     * 快递取件地址
      */
     private String address;
     /**
@@ -50,6 +50,10 @@ public class OrderInfo {
      * 配送员ID
      */
     private String courierId;
+    /**
+     * 配送员手机号
+     */
+    private String courierTel;
     /**
      * 订单状态
      */

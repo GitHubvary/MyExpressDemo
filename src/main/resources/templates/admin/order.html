@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en"  xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>订单管理——快递代拿系统</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}" href="../../static/layui/css/layui.css" media="all">
+    <link rel="stylesheet" th:href="@{/css/public.css}" href="../../static/css/public.css" media="all">
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+
+        <fieldset class="table-search-fieldset">
+            <legend>订单查询</legend>
+            <div style="margin: 10px 10px 10px 10px">
+                <form class="layui-form layui-form-pane">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">订单状态</label>
+                            <div class="layui-input-inline">
+                                <select id="inputOrderStatus">
+                                    <option value=-1>所有状态</option>
+                                    <option value=1>等待接单</option>
+                                    <option value=2>派送中</option>
+                                    <option value=3>订单完成</option>
+                                    <option value=4>订单异常</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">起始日期</label>
+                            <div class="layui-input-inline">
+                                <input type="date" id="inputStartDate" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">截止日期</label>
+                            <div class="layui-input-inline">
+                                <input type="date" id="inputEndDate" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+
+                        <div class="layui-inline">
+                            <label class="layui-form-label">支付状态</label>
+                            <div class="layui-input-inline">
+                                <select id="inputPaymentStatus">
+                                    <option value=-1>所有状态</option>
+                                    <option value=1>等待支付</option>
+                                    <option value=2>支付关闭</option>
+                                    <option value=3>支付成功</option>
+                                    <option value=4>支付结束</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">订单号</label>
+                            <div class="layui-input-inline">
+                                <input type="text" class="layui-input" autocomplete="off" id="inputId">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜索</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </fieldset>
+
+        <!--列表工具栏-->
+        <script type="text/html" id="toolbarDemo">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-sm data-add-btn layui-btn-primary"  lay-event="refresh"> 刷新 </button>
+                <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" lay-event="distribution">订单分配</button>
+                <button type="button" class="layui-btn layui-btn-sm " lay-event="complete">完成订单</button>
+                <button type="button" class="layui-btn layui-btn-sm layui-btn-warm" lay-event="exception">异常订单</button>
+                <button type="button" class="layui-btn layui-btn-sm layui-btn-danger" lay-event="delete">删除订单</button>
+            </div>
+        </script>
+
+        <div class="layui-box">
+            <div class="layui-row layui-col-space10">
+                <div class="layui-col-md12">
+                    <blockquote class="layui-elem-quote main_btn">
+                        <p><strong>订单分配：</strong> 订单状态需为 【等待接单】，支付状态需为 【支付成功】 或 【支付结束】</p>
+                        <p><strong>完成订单：</strong> 订单状态需为 【派送中】 或 【订单异常】</p>
+                        <p><strong>异常订单：</strong> 订单状态需为 【派送中】</p>
+                        <p><strong>删除订单：</strong> 订单状态需非 【派送中】</p>
+                    </blockquote>
+                </div>
+            </div>
+        </div>
+
+        <!--反馈列表-->
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+    </div>
+
+    <div>
+        <select id="inputCourierTel" style="display: none"></select>
+    </div>
+
+    <!-- 分配订单模态框 -->
+    <div class="layuimini-container" id="allotOrder" style="display: none">
+        <div class="layuimini-main">
+            <div class="layui-form layuimini-form">
+                <div class="layui-form-item layui-row">
+                    <label class="layui-form-label">配送人员</label>
+                    <div class="layui-col-md9">
+                        <select id="inputCourierOption">
+                            <option value=-1>未选中</option>
+                        </select>
+                    </div>
+                </div>
+                <hr>
+                <div class="modal-footer">
+                    <button type="button" class="layui-btn  layui-btn-normal" id="allotBtn">分配</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!--订单详情模态框-->
+    <div class="layuimini-container" id="orderInfo"  style="display: none">
+        <div class="layuimini-main">
+            <div class="layui-form layuimini-form">
+                <div class="layui-form-item layui-row">
+                    <label class="layui-form-label">订单号</label>
+                    <div class="layui-col-md9">
+                        <p class="layui-form-label-col" id="inputInfoId"></p>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">收件姓名</label>
+                    <div class="layui-input-block">
+                        <p class="layui-form-label-col"  id="inputInfoName"></p>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">收件短信</label>
+                    <div class="layui-input-block">
+                        <p class="layui-form-label-col" id="inputInfoTel"></p>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">收件地址</label>
+                    <div class="layui-input-block">
+                        <p class="layui-form-label-col" id="inputInfoAddress"></p>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">快递单号</label>
+                    <div class="layui-input-block">
+                        <p class="layui-form-label-col" id="inputInfoOdd"></p>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">快递公司</label>
+                    <div class="layui-input-block">
+                        <p class="layui-form-label-col" id="inputInfoCompany"></p>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">备注</label>
+                    <div class="layui-input-block">
+                        <p class="layui-form-label-col" id="inputInfoRemark"></p>
+                    </div>
+                </div>
+                <hr>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">支付方式</label>
+                    <div class="layui-input-block">
+                        <p class="layui-form-label-col" id="inputInfoPaymentType"></p>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">流水号</label>
+                    <div class="layui-input-block">
+                        <p class="layui-form-label-col" id="inputInfoPaymentId"></p>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">支付金额</label>
+                    <div class="layui-input-block">
+                        <p class="layui-form-label-col" id="inputInfoMoney"></p>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">支付状态</label>
+                    <div class="layui-input-block">
+                        <p class="layui-form-label-col" id="inputInfoPaymentStatus"></p>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">订单状态</label>
+                    <div class="layui-input-block">
+                        <p class="layui-form-label-col" id="inputInfoOrderStatus"></p>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">配送员</label>
+                    <div class="layui-input-block">
+                        <p class="layui-form-label-col" id="inputInfoCourierName"></p>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">配送员电话</label>
+                    <div class="layui-input-block">
+                        <p class="layui-form-label-col" id="inputInfoCourierTel"></p>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">配送备注</label>
+                    <div class="layui-input-block">
+                        <p class="layui-form-label-col" id="inputInfoCourierRemark"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+<script th:src="@{/layui/layui.js}" src="../../static/layui/layui.js" charset="utf-8"></script>
+<script th:src="@{/js/jquery-3.4.1/jquery-3.4.1.min.js}" src="../../static/js/jquery-3.4.1/jquery-3.4.1.min.js" charset="utf-8" type="text/javascript"></script>
+<script th:src="@{/js/http.js}" src="../../static/js/http.js"></script>
+<script  type="text/javascript"  th:inline="none">
+    layui.use(['form', 'table','layer'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            table = layui.table,
+            layer = layui.layer;
+
+        table.render({
+            elem: '#currentTableId',
+            url: '/order/list',
+            toolbar: '#toolbarDemo',
+            cellMinWidth: 80,
+            defaultToolbar: ['filter', 'exports', 'print', {
+                title: '提示',
+                layEvent: 'LAYTABLE_TIPS',
+                icon: 'layui-icon-tips'
+            }],
+            cols: [[
+                {type: "checkbox"},
+                {field: 'id',title: '订单号'},
+                {field: 'recName',  title: '收件人'},
+                {field: 'recTel', title: '收件电话'},
+                {field: 'odd', title: '取货码'},
+                {field: 'company', title: '快递公司'},
+                {field: 'address', title: '快递取件地址'},
+                {field: 'recAddress', title: '收件地址'},
+                {field: 'remark',title: '下单备注'},
+                {field: 'paymentStatus', title: '支付状态', sort: true,
+                    templet: function paymentFormatter(value) {
+                        if(value.paymentStatus === 1)
+                            return '<span style="color:#f5a623">等待支付</span>';
+                        else if (value.paymentStatus === 2)
+                            return '<span style="color:red">支付关闭</span>';
+                        else if (value.paymentStatus === 3)
+                            return '<span style="color:green">支付成功</span>';
+                        else if (value.paymentStatus === 4)
+                            return '<span style="color:grey">支付结束</span>';
+                    }
+                },
+                {field: 'orderStatus', title: '订单状态', sort: true,
+                    templet: function orderFormatter(value) {
+                        if(value.orderStatus === 4)
+                            return '<span style="color:red">订单异常</span>';
+                        else if (value.orderStatus === 3)
+                            return '<span style="color:olivedrab">订单完成</span>';
+                        else if (value.orderStatus === 2)
+                            return '<span style="color:#42afff">派送中</span>';
+                        else if (value.orderStatus === 1)
+                            return '<span style="color:grey">等待接单</span>';
+                    }
+                },
+                {field: 'createDate', title: '下单时间'},
+                {title: '操作', align: "center",
+                    templet: function actionFormatter(value) {
+                        let id = "'" + value.id + "'", result = '';
+                        return '<button class="layui-btn layui-btn-sm" onclick="showDetail('+id+')" title="查看">查看</button>\n';
+                    }
+                }
+            ]],
+            where:{type:0},
+            limits: [10, 15, 20, 25, 50, 100],
+            limit: 15,
+            page: true,
+            parseData: function(res){
+                // console.log(res);
+                return {
+                    "code": 0,
+                    "msg": "",
+                    "count": res.total,
+                    "data":res.rows
+                }
+            },
+            skin: 'line'
+        });
+
+        // 加载快递员列表
+        sendJson(HTTP.GET, "/user/courier-list", null, true, function (res) {
+            if(res.code === 0) {
+                let html = '',tel = '', data = res.data;
+                for (let i = 0; i < data.length; i++) {
+                    html += '<option value="' + data[i].id + '">' + data[i].name + '</option>\n';
+                }
+
+                for (let i = 0; i < data.length; i++) {
+                    tel += '<option value="' + data[i].id + '">' + data[i].tel + '</option>\n';
+                }
+                // console.log("加载快递员列表："+html);
+                $("#inputCourierOption").append(html);
+                $("#inputCourierTel").append(tel);
+                form.render();
+            } else {
+                layer.msg(res.msg, {icon: 2});
+            }
+        }, function () {
+            layer.msg("未知错误",{icon:2});
+        });
+
+        //执行查看订单操作
+        window.showDetail = function (id) {
+            sendJson(HTTP.GET, "/order/" + id, null, false, function (res) {
+                if (res.code !== 0) {
+                    layer.msg(res.msg, {icon: 2});
+                } else {
+
+                    // 初始化模态框信息
+                    let data = res.data;
+                    console.log("查看订单"+res.data);
+                    $("#inputInfoId").text(data.orderId);
+                    $("#inputInfoName").text(data.recName);
+                    $("#inputInfoTel").text(data.recTel);
+                    $("#inputInfoAddress").text(data.recAddress);
+                    $("#inputInfoOdd").text(data.odd);
+                    $("#inputInfoCompany").text(data.companyName);
+                    $("#inputInfoRemark").text(data.remark);
+
+                    $("#inputInfoPaymentType").text(data.paymentType);
+                    $("#inputInfoPaymentId").text(data.paymentId);
+                    $("#inputInfoMoney").text(data.payment);
+                    $("#inputInfoPaymentStatus").text(data.paymentStatus);
+
+                    $("#inputInfoOrderStatus").text(data.orderStatus);
+                    $("#inputInfoCourierName").text(data.courierFrontName);
+                    $("#inputInfoCourierTel").text(data.courierTel);
+                    $("#inputInfoCourierRemark").text(data.courierRemark);
+
+                    layer.open({
+                        type: 1,
+                        title:'订单详情',
+                        area:['630px','500px'],
+                        content:$('#orderInfo')
+                    });
+                }
+            }, function () {
+                layer.msg("未知错误", {icon: 2});
+            });
+        };
+
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function () {
+            //执行搜索重载
+            table.reload('currentTableId', {
+                url:'/order/list',
+                page: {
+                    curr: 1
+                }, where: {
+                    type: 0,
+                    id: $("#inputId").val(),
+                    status: $("#inputOrderStatus").val(),
+                    payment: $("#inputPaymentStatus").val(),
+                    startDate: $("#inputStartDate").val(),
+                    endDate:$("#inputEndDate").val()
+                }
+            });
+
+            return false;
+        });
+
+        /**
+         * toolbar监听事件
+         */
+        table.on('toolbar(currentTableFilter)', function (obj) {
+            if (obj.event === 'refresh') {  // 监听刷新操作
+                $("#inputId").val("");
+                $("#inputOrderStatus").val(-1);
+                $("#inputPaymentStatus").val(-1);
+                $("#inputStartDate").val("");
+                $("#inputEndDate").val("");
+                form.render(); //重置刷新表单
+                table.reload('currentTableId', {
+                    url:'/order/list',
+                    page: {curr: 1}, where: {
+                        id:null,
+                        status:null,
+                        payment:null,
+                        startDate:null,
+                        endDate:null
+                    }
+                });
+            }
+            else if (obj.event === 'distribution') {
+                let checkStatus = table.checkStatus('currentTableId');
+                if (checkStatus.data.length > 0) {
+                    let ids = new Array();
+                    for (let i = 0; i < checkStatus.data.length; i++) {
+                        if (checkStatus.data[i].orderStatus === 1 && (checkStatus.data[i].paymentStatus === 3 || checkStatus.data[i].paymentStatus === 4)) {
+                            ids.push(checkStatus.data[i].id);
+                        }
+                    }
+                    if (ids.length === 0) {
+                        layer.msg("选中的没有可分配的订单", {icon: 7});
+                    } else {
+                        layer.open(
+                            {
+                                type:1,
+                                title:"分配订单",
+                                content:$('#allotOrder')
+                            }
+                        );
+                        // 点击模态框分配按钮后
+                        $("#allotBtn").on('click',function () {
+                            // layer.closeAll();
+                            let courier = $("#inputCourierOption").val();
+                            $("#inputCourierTel").find("option[value = '"+courier+"']").attr("selected","selected");
+                            let courierTel = $("#inputCourierTel").find("option:selected").text();
+                            console.log("sendArray");
+                            sendArray(HTTP.POST, "/order/batch-allot", {
+                                "ids": ids,
+                                "courier": courier,
+                                "courierTel":courierTel
+                            }, false, function (res) {
+                                if (res.code === 0) {
+                                    layer.msg("分配成功" + res.data.success + "个，失败" + res.data.error + "个", {icon: 1});
+                                    table.reload('currentTableId', {
+                                        url: '/order/list',
+                                        page: {curr: 1}, where: {
+                                            id: null,
+                                            status: null,
+                                            payment: null,
+                                            startDate: null,
+                                            endDate: null
+                                        }
+                                    });
+                                    //模态框重叠，会重复发送post请求，需要刷新页面
+                                    window.setTimeout("location.reload();", 2000);
+                                } else {
+                                    layer.msg(res.msg, {icon: 2});
+                                }
+                            }, function () {
+                                layer.msg("未知错误", {icon: 2});
+                            });
+                        });
+                    }
+                } else {
+                    layer.msg("请先选中订单", {icon: 7});
+                }
+            }
+            else if (obj.event === 'complete') {
+                let checkStatus = table.checkStatus('currentTableId');
+                if (checkStatus.data.length > 0) {
+                    let ids = new Array();
+                    for (let i = 0; i < checkStatus.data.length; i++) {
+                        if (checkStatus.data[i].orderStatus === 2 || checkStatus.data[i].orderStatus === 4) {
+                            ids.push(checkStatus.data[i].id);
+                        }
+                    }
+                    if (ids.length === 0) {
+                        layer.msg("选中的没有可完成的订单", {icon: 7});
+                        return false;
+                    } else {
+                        layer.confirm("即将处理订单：" + ids + "，确认执行？", {
+                            btn: ['确定', '取消']
+                        }, function () {
+                            layer.prompt({title: "成功信息", formType: 2}, function (val, index) {
+                                sendArray(HTTP.POST, "/order/batch-complete", {
+                                    "ids": ids,
+                                    "remark": val
+                                }, false, function (res) {
+                                    if (res.code === 0) {
+                                        layer.msg("成功，处理" + res.data.success + "个，失败" + res.data.error + "个", {icon: 1});
+                                        layer.close(index);
+                                        table.reload('currentTableId', {
+                                            url:'/order/list',
+                                            page: {curr: 1}, where: {
+                                                id:null,
+                                                status:null,
+                                                payment:null,
+                                                startDate:null,
+                                                endDate:null
+                                            }
+                                        });
+                                    } else {
+                                        layer.msg(res.msg, {icon: 2});
+                                    }
+                                }, function () {
+                                    layer.msg("未知错误", {icon: 2});
+                                });
+                            });
+                        }, function () {
+                        });
+                    }
+                } else {
+                    layer.msg("请先选中订单", {icon: 7});
+                }
+            }
+            else if (obj.event === 'exception') {
+                let checkStatus = table.checkStatus('currentTableId');
+                if (checkStatus.data.length > 0) {
+                    let ids = new Array();
+                    for (let i = 0; i < checkStatus.data.length; i++) {
+                        if (checkStatus.data[i].orderStatus === 2) {
+                            ids.push(checkStatus.data[i].id);
+                        }
+                    }
+                    if (ids.length === 0) {
+                        layer.msg("选中的没有可异常的订单", {icon: 7});
+                        return false;
+                    } else {
+                        layer.confirm("即将异常订单：" + ids + "，确认执行？", {
+                            btn: ['确定', '取消']
+                        }, function () {
+                            layer.prompt({title: "成功信息", formType: 2}, function (val, index) {
+                                sendArray(HTTP.POST, "/order/batch-error", {
+                                    "ids": ids,
+                                    "remark": val
+                                }, false, function (res) {
+                                    if (res.code === 0) {
+                                        layer.msg("成功，处理" + res.data.success + "个，失败" + res.data.error + "个", {icon: 1});
+                                        layer.close(index);
+                                        table.reload('currentTableId', {
+                                            url: '/order/list',
+                                            page: {curr: 1}, where: {
+                                                id: null,
+                                                status: null,
+                                                payment: null,
+                                                startDate: null,
+                                                endDate: null
+                                            }
+                                        });
+                                    } else {
+                                        layer.msg(res.msg, {icon: 2});
+                                    }
+                                }, function () {
+                                    layer.msg("未知错误", {icon: 2});
+                                });
+                            });
+                        }, function () {
+                        });
+                    }
+                }
+            }
+            else if (obj.event === 'delete') {
+                let checkStatus = table.checkStatus('currentTableId');
+                if (checkStatus.data.length > 0) {
+                    let ids = new Array();
+                    for (let i = 0; i < checkStatus.data.length; i++) {
+                        if (checkStatus.data[i].orderStatus !== 2) {
+                            ids.push(checkStatus.data[i].id);
+                        }
+                    }
+                    if (ids.length === 0) {
+                        layer.msg("选中项不包含可删除的订单", {icon: 0});
+                        return false;
+                    } else {
+                        layer.confirm("删除的订单号为：" + ids + "，确认执行？", {
+                            btn: ['确定', '取消']
+                        }, function () {
+                            layer.prompt(
+                                {title: "成功信息", formType: 2}, function (val, index) {
+                                sendArray(HTTP.POST, "/order/batch-remove", {
+                                    "ids": ids,
+                                    "remark": val
+                                }, false, function (res) {
+                                    if (res.code === 0) {
+                                        layer.msg("成功，删除" + res.data.success + "个，失败" + res.data.error + "个", {icon: 1});
+                                        layer.close(index);
+                                        table.reload('currentTableId', {
+                                            url: '/order/list',
+                                            page: {curr: 1}, where: {
+                                                id: null,
+                                                status: null,
+                                                payment: null,
+                                                startDate: null,
+                                                endDate: null
+                                            }
+                                        });
+                                    } else {
+                                        layer.msg(res.msg, {icon: 2});
+                                    }
+                                }, function () {
+                                    layer.msg("未知错误", {icon: 2});
+                                });
+                            });
+                        }, function () {
+                        });
+                    }
+                }
+            }
+        });
+    });
+</script>
+</body>
+</html>

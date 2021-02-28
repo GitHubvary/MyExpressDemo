@@ -21,7 +21,7 @@ public class OrderDescVO implements Serializable {
      */
     private String orderId;
     /**
-     * 快递单号
+     * 取货码
      */
     private String odd;
     /**
@@ -37,7 +37,7 @@ public class OrderDescVO implements Serializable {
      */
     private String recTel;
     /**
-     * 快递寄达地址
+     * 快递取件地址
      */
     private String address;
     /**
@@ -52,6 +52,10 @@ public class OrderDescVO implements Serializable {
      * 配送员前台名
      */
     private String courierFrontName;
+    /**
+     * 配送员手机号
+     */
+    private String courierTel;
     /**
      * 订单状态
      */

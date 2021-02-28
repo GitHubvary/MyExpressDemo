@@ -262,7 +262,7 @@ public class OrderApiController {
      */
     @PostMapping("/batch-allot")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseResult batchAllotOrder(String[] ids, String courier) {
+    public ResponseResult batchAllotOrder(String[] ids, String courier,String courierTel) {
         System.out.println("收到分配："+ids.length);
         if(ids.length == 0 || StringUtils.isBlank(courier)) {
             return ResponseResult.failure(ResponseErrorCodeEnum.PARAMETER_ERROR);
@@ -271,7 +271,7 @@ public class OrderApiController {
             return ResponseResult.failure(ResponseErrorCodeEnum.COURIER_NOT_EXIST);
         }
 
-        return orderInfoService.batchAllotOrder(ids, courier);
+        return orderInfoService.batchAllotOrder(ids, courier,courierTel);
     }
 
     /**

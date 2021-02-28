@@ -9,6 +9,7 @@ import com.example.demo.config.AliPayConfig;
 import com.example.demo.domain.ResponseResult;
 import com.example.demo.domain.bean.OrderInfo;
 import com.example.demo.domain.bean.OrderPayment;
+import com.example.demo.domain.bean.User;
 import com.example.demo.domain.enums.*;
 import com.example.demo.domain.vo.LayuiTableVO;
 import com.example.demo.domain.vo.admin.AdminOrderVO;
@@ -42,7 +43,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     private OrderInfoMapper orderInfoMapper;
 
     @Autowired
-    private UserService sysUserService;
+    private UserService userService;
     @Autowired
     private DataCompanyService dataCompanyService;
     @Autowired
@@ -111,13 +112,16 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 .recTel(orderInfo.getRecTel())
                 .address(orderInfo.getAddress())
                 .recAddress(orderInfo.getRecAddress())
+                .courierTel(orderInfo.getCourierTel())
                 .remark(orderInfo.getRemark())
                 .orderStatus(orderInfo.getOrderStatus().getName()).build();
 
+        System.out.println("desc:"+vo.getCourierTel());
         if(StringUtils.isNotBlank(orderInfo.getCourierId())) {
-            String courierFrontName = sysUserService.getFrontName(orderInfo.getCourierId());
+            String courierFrontName = userService.getFrontName(orderInfo.getCourierId());
             vo.setCourierFrontName(courierFrontName);
             vo.setCourierRemark(orderInfo.getCourierRemark());
+            vo.setCourierTel(orderInfo.getCourierTel());
         }
 
         OrderPayment payment = orderPaymentService.getById(orderId);
@@ -371,7 +375,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     }
 
     @Override
-    public ResponseResult batchAllotOrder(String[] ids, String courierId) {
+    public ResponseResult batchAllotOrder(String[] ids, String courierId,String courierTel) {
         int success = 0;
         for(String orderId : ids) {
             OrderInfo orderInfo = orderInfoMapper.selectById(orderId);
@@ -385,8 +389,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             if(payment.getPaymentStatus() != PaymentStatusEnum.TRADE_SUCCESS && payment.getPaymentStatus() != PaymentStatusEnum.TRADE_FINISHED) {
                 continue;
             }
-
             orderInfo.setCourierId(courierId);
+            orderInfo.setCourierTel(courierTel);
+            System.out.println(orderInfo.getCourierId()+"分配配送员电话："+orderInfo.getCourierTel());
             orderInfo.setOrderStatus(OrderStatusEnum.TRANSPORT);
             if(this.retBool(orderInfoMapper.updateById(orderInfo))) {
                 success++;

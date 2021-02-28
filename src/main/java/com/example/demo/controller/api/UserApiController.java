@@ -154,6 +154,7 @@ public class UserApiController {
             Map<String ,String> map = new HashMap<>();
             map.put("id", user.getId());
             map.put("name", userService.getFrontName(user));
+            map.put("tel",user.getTel());
             result.add(map);
         }
 

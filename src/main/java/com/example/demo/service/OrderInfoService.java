@@ -86,7 +86,7 @@ public interface OrderInfoService extends IService<OrderInfo> {
     /**
      * 批量分配订单
      */
-    ResponseResult batchAllotOrder(String[] ids, String courierId);
+    ResponseResult batchAllotOrder(String[] ids, String courierId,String courierTel);
 
     Map<String, Integer> getAdminDashboardData();
 

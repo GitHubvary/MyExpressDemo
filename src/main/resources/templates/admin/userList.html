@@ -18,12 +18,12 @@
             <div style="margin: 10px 10px 10px 10px">
                 <form class="layui-form layui-form-pane">
                     <div class="layui-form-item">
-                        <div class="layui-inline">
-                            <label class="layui-form-label">用户ID</label>
-                            <div class="layui-input-inline">
-                                <input type="text" id="inputId" autocomplete="off" class="layui-input">
-                            </div>
-                        </div>
+<!--                        <div class="layui-inline">-->
+<!--                            <label class="layui-form-label">用户ID</label>-->
+<!--                            <div class="layui-input-inline">-->
+<!--                                <input type="text" id="inputId" autocomplete="off" class="layui-input">-->
+<!--                            </div>-->
+<!--                        </div>-->
                         <div class="layui-inline">
                             <label class="layui-form-label">用户名</label>
                             <div class="layui-input-inline">
@@ -119,8 +119,8 @@
             }],
             cols: [[
                 // {type: "checkbox", width: 50},
-                {field: 'id',title: '用户ID', sort: true, align: 'center'},
-                {field: 'username', title: '用户名'},
+                // {field: 'id',title: '用户ID', sort: true, align: 'center'},
+                {field: 'username', title: '用户名', align: 'center', width: 90},
                 {field: 'role', title: '用户权限', sort: true, align: 'center',
                     templet:function roleFormatter(value) {
                         switch (value.role) {
@@ -135,8 +135,21 @@
                         }
                     }
                 },
-                {field: 'tel',  title: '手机号码',align:'left'},
-                {field: 'hasReal', title: '实名状态', sort: true, align: 'center',
+                {field: 'tel',  title: '手机号码',align:'center'},
+                {field: 'score', title: '评分',width: 80,
+                    templet: function scoreFormatter(value) {
+                        if(value.score != null) {
+                            if(value.score < 3) {
+                                return '<span style="color:red">'+value.score+'</span>';
+                            } else if(value.score < 7) {
+                                return '<span style="color:orange">'+value.score+'</span>';
+                            } else {
+                                return '<span style="color:green">'+value.score+'</span>';
+                            }
+                        } else { return '<span style="color:gray">未评分</span>'}
+                    }
+                },
+                {field: 'hasReal', title: '实名状态', sort: true, align: 'center',width: 110,
                     templet: function realFormatter(value, row, index) {
                     if(value.hasReal) {
                         return '<span style="color:gray">已实名</span>';
@@ -145,7 +158,7 @@
                     }
                     }
                 },
-                {field: 'hasEnable', title: '启用状态', sort: true, align: 'center',
+                {field: 'hasEnable', title: '启用状态', sort: true, align: 'center',width: 110,
                     templet: function enableFormatter(value) {
                         if(value.hasEnable) {
                             return '<span style="color:gray">启用</span>';
@@ -154,7 +167,7 @@
                         }
                     }
                 },
-                {field: 'lockDate', title: '冻结时间', sort: true, align: 'center',
+                {field: 'lockDate', title: '冻结时间', sort: true, align: 'center',width: 120,
                     templet: function lockFormatter(value, row, index) {
                         if(value.lockDate === null || value.lockDate === '') {
                             return '<span style="color:gray">未冻结</span>';
@@ -163,7 +176,7 @@
                         }
                     }
                 },
-                {field: 'createDate',title: '注册时间', sort: true, align: 'left'},
+                {field: 'createDate',title: '注册时间', sort: true, align: 'center',width: 120},
                 {title: '操作', align: "center",
                     templet: function actionFormatter(value) {
                         let id = "'" + value.id + "'", result = '';

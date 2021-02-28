@@ -12,13 +12,13 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 public class AdminUserInfoVO implements Serializable {
-    private String id;
+    private String id;  //用户ID
 
-    private String username;
+    private String username;  //用户名
 
-    private String tel;
+    private String tel;   //手机号
 
-    private Integer role;
+    private Integer role;  //用户权限
     /**
      * 是否实名认证
      */
