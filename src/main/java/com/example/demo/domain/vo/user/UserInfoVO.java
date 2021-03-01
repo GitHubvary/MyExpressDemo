@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * Description:
@@ -23,6 +24,8 @@ public class UserInfoVO implements Serializable {
     private String role;
 
     private String roleName;
+
+    private BigDecimal account;
 
     private String idCard;
 

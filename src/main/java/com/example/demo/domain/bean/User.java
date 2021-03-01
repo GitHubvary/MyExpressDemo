@@ -11,6 +11,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,7 +26,7 @@ import java.util.Collection;
 public class User implements UserDetails, CredentialsContainer {
 
     //标注主键
-    @TableId(type = IdType.UUID)
+    @TableId(value ="id",type = IdType.UUID)
     private String id;
 
 
@@ -44,6 +45,9 @@ public class User implements UserDetails, CredentialsContainer {
 
     @TableField("id_card")
     private String idCard;  //身份证号
+
+    @TableField("account")
+    private BigDecimal account;  //账户余额
 
     @TableField("student_id")
     private String studentId;//学号

@@ -9,6 +9,7 @@ import com.example.demo.domain.enums.ResponseErrorCodeEnum;
 import com.example.demo.domain.enums.UserRoleEnum;
 import com.example.demo.domain.vo.LayuiTableVO;
 import com.example.demo.domain.vo.admin.AdminUserInfoVO;
+import com.example.demo.mapper.UserMapper;
 import com.example.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -30,6 +31,9 @@ import java.util.Map;
 public class UserApiController {
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private UserMapper userMapper;
 
     /**
      * 获取用户列表
@@ -106,8 +110,8 @@ public class UserApiController {
     @PostMapping("/{id}/status")
     public ResponseResult changeStatus(@PathVariable String id, String type, String hour) {
         Integer op = StringUtils.toInteger(type, -1);
-        System.out.println(id+'\t'+type);
-        User user = userService.getById(id);
+        User user = userMapper.selectById(id);
+        System.out.println("更新前"+user.getHasEnable());
         if(user.getRole() == UserRoleEnum.ADMIN) {
             return ResponseResult.failure(ResponseErrorCodeEnum.NO_PERMISSION);
         }
@@ -118,6 +122,7 @@ public class UserApiController {
                 break;
             case 2:
                 user.setHasEnable(1);
+                System.out.println("启用后"+user.getHasEnable());
                 break;
             case 3:
                 // 必须为正整数
@@ -134,9 +139,13 @@ public class UserApiController {
                 return ResponseResult.failure(ResponseErrorCodeEnum.PARAMETER_ERROR);
         }
 
+//        userMapper.updateById(user);
+
         if(userService.updateById(user)) {
+            System.out.println("更新后"+user.getHasEnable());
             return ResponseResult.success();
         } else {
+            System.out.println("更新后"+user.getHasEnable());
             return ResponseResult.failure(ResponseErrorCodeEnum.OPERATION_ERROR);
         }
     }

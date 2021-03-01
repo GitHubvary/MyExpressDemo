@@ -1,7 +1,8 @@
 package com.example.demo.security.validate;
 
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.BadCredentialsException;
+import com.example.demo.common.util.DateUtils;
+import com.example.demo.domain.bean.User;
+import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -37,8 +38,8 @@ public class TraditionAuthenticationProvider implements AuthenticationProvider {
             throw new BadCredentialsException("密码错误");
         }
 
-//        // 校验账户状态
-//        authenticationChecks(userDetails);
+        // 校验账户状态
+        authenticationChecks(userDetails);
 
         // 此时鉴权成功后，应当重新 new 一个拥有鉴权的 authenticationResult 返回
         TraditionAuthenticationToken authenticationResult = new TraditionAuthenticationToken(userDetails, null, userDetails.getAuthorities());
@@ -56,6 +57,27 @@ public class TraditionAuthenticationProvider implements AuthenticationProvider {
 
     public void setUserDetailsService(UserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
+    }
+
+    private void authenticationChecks(UserDetails user) {
+        if (!user.isAccountNonLocked()) {
+
+            throw new LockedException("账户已冻结，解冻时间为：" + DateUtils.format(((User)user).getLockDate(), 1));
+        }
+
+        if (!user.isEnabled()) {
+
+            throw new DisabledException("账户已失效，请联系管理员");
+        }
+
+        if (!user.isAccountNonExpired()) {
+
+            throw new AccountExpiredException("账户已过期，请联系管理员");
+        }
+
+        if (!user.isCredentialsNonExpired()) {
+            throw new CredentialsExpiredException("密码已过期");
+        }
     }
 
 

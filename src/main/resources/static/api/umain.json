@@ -1,0 +1,45 @@
+{
+  "homeInfo": {
+    "title": "首页",
+    "href": "/user/dashboard"
+  },
+  "logoInfo": {
+    "title": "快递代拿系统",
+    "image": "/images/express-logo.png",
+    "href": ""
+  },
+  "menuInfo": [
+    {
+      "title": "用户界面",
+      "icon": "fa fa-slideshare",
+      "href": "",
+      "target": "_self",
+      "child":[
+        {
+          "title": "立即下单",
+          "href": "/user/place",
+          "icon": "fa fa-dot-circle-o",
+          "target": "_self"
+        },
+        {
+          "title": "我的订单",
+          "href": "/user/history",
+          "icon": "fa fa-adn",
+          "target": "_self"
+        },
+        {
+          "title": "回收站",
+          "href": "/user/recycle",
+          "icon": "fa fa-adn",
+          "target": "_self"
+        },
+        {
+          "title": "评价反馈",
+          "href": "/user/feedback",
+          "icon": "fa fa-adn",
+          "target": "_self"
+        }
+      ]
+    }
+  ]
+}

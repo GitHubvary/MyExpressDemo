@@ -57,13 +57,13 @@ public class PageController {
                 response.sendRedirect("/completeInfo");
                 return;
             case USER:
-                response.sendRedirect("/user/user");
+                response.sendRedirect("/user/main");
                 return;
             case ADMIN:
                 response.sendRedirect("/admin/main");
                 return;
             case COURIER:
-                response.sendRedirect("/courier/courier");
+                response.sendRedirect("/courier/main");
                 return;
             default:
                 response.sendRedirect("/login");

@@ -173,6 +173,7 @@ public class UserSeviceImpl extends ServiceImpl<UserMapper, User> implements Use
                         .role(String.valueOf(userRole.getType()))
                         .roleName(userRole.getCnName())
                         .school(user.getSchoolName())
+                        .account(user.getAccount())
                         .studentId(user.getStudentId())
                         .build();
 
