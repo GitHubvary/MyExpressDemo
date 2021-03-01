@@ -12,7 +12,8 @@ public enum PaymentTypeEnum implements IEnum<Integer> {
     /**
      * 支付宝支付
      */
-    AliPay(1, "支付宝");
+    AliPay(1, "支付宝"),
+    WeChatPay(2, "微信支付");
 
     private int type;
 

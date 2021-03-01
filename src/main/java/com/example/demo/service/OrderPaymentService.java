@@ -17,7 +17,6 @@ public interface OrderPaymentService extends IService<OrderPayment> {
      */
     boolean createAliPayment(String orderId, double money, String sellerId);
 
-    boolean validAlipay(Map<String,String> params) throws Exception;
 
     /**
      * 改变订单状态
@@ -25,8 +24,4 @@ public interface OrderPaymentService extends IService<OrderPayment> {
      */
     boolean updateStatus(String orderId, PaymentStatusEnum status, String... tradeNo);
 
-    /**
-     * 请求支付宝服务器,同步支付状态
-     */
-    ResponseResult syncPaymentInfo(String orderId);
 }

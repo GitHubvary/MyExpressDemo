@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.demo.common.util.StringUtils;
-import com.example.demo.config.AliPayConfig;
 import com.example.demo.domain.ResponseResult;
 import com.example.demo.domain.bean.OrderInfo;
 import com.example.demo.domain.bean.OrderPayment;
@@ -50,9 +49,6 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     private OrderPaymentService orderPaymentService;
     @Autowired
     private OrderEvaluateService orderEvaluateService;
-
-    @Autowired
-    private AliPayConfig aliPayConfig;
     @Autowired
     private DataSourceTransactionManager transactionManager;
 
@@ -87,7 +83,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         }
 
         String orderId = orderInfo.getId();
-        boolean b = orderPaymentService.createAliPayment(orderId, money, aliPayConfig.getSellerId());
+        boolean b = orderPaymentService.createAliPayment(orderId, money, "2088102175634311");
         if(!b) {
             transactionManager.rollback(status);
             return ResponseResult.failure(ResponseErrorCodeEnum.ORDER_PAYMENT_CREATE_ERROR);

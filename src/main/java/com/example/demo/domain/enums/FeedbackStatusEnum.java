@@ -15,6 +15,7 @@ public enum FeedbackStatusEnum implements IEnum<Integer> {
     PROCESS(2, "处理中"),
     COMPLETE(3, "处理完毕");
 
+
     private int status;
 
     private String name;
