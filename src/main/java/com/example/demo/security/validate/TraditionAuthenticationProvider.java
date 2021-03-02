@@ -70,14 +70,6 @@ public class TraditionAuthenticationProvider implements AuthenticationProvider {
             throw new DisabledException("账户已失效，请联系管理员");
         }
 
-        if (!user.isAccountNonExpired()) {
-
-            throw new AccountExpiredException("账户已过期，请联系管理员");
-        }
-
-        if (!user.isCredentialsNonExpired()) {
-            throw new CredentialsExpiredException("密码已过期");
-        }
     }
 
 

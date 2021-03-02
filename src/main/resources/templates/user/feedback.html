@@ -1,10 +1,277 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>评价反馈</title>
+    <title>反馈管理——快递代拿系统</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}" href="../../static/layui/css/layui.css" media="all">
+    <link rel="stylesheet" th:href="@{/css/public.css}" href="../../static/css/public.css" media="all">
 </head>
 <body>
-<h1>反馈页面</h1>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+
+        <fieldset class="table-search-fieldset">
+            <legend>反馈查询</legend>
+            <div style="margin: 10px 10px 10px 10px">
+                <form class="layui-form layui-form-pane">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">反馈类型</label>
+                            <div class="layui-input-inline">
+                                <select id="inputType">
+                                    <option value=-1>所有类型</option>
+                                    <option value=1>订单反馈</option>
+                                    <option value=2>意见反馈</option>
+                                    <option value=3>BUG反馈</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">起始日期</label>
+                            <div class="layui-input-inline">
+                                <input type="date" id="inputStartDate" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">截止日期</label>
+                            <div class="layui-input-inline">
+                                <input type="date" id="inputEndDate" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">反馈状态</label>
+                            <div class="layui-input-inline">
+                                <select id="inputStatus">
+                                    <option value=-1>所有状态</option>
+                                    <option value=1>等待处理</option>
+                                    <option value=2>处理中</option>
+                                    <option value=3>处理完毕</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">反馈号</label>
+                            <div class="layui-input-inline">
+                                <input type="text" class="layui-input" autocomplete="off" id="inputId">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜索</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </fieldset>
+
+        <!--列表工具栏-->
+        <script type="text/html" id="toolbarDemo">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-sm data-add-btn layui-btn-primary" lay-event="refresh"> 刷新 </button>
+                <button type="button" class="layui-btn layui-btn-sm layui-btn-warm" lay-event="cancel">撤销反馈</button>
+            </div>
+        </script>
+
+        <div class="layui-box">
+            <div class="layui-row layui-col-space10">
+                <div class="layui-col-md12">
+                    <blockquote class="layui-elem-quote main_btn">
+                        <p><strong>提示！</strong> 撤销反馈仅能撤“等待处理”状态反馈</p>
+                    </blockquote>
+                </div>
+            </div>
+        </div>
+
+        <!--反馈列表-->
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+
+    </div>
+</div>
+<script th:src="@{/layui/layui.js}" src="../../static/layui/layui.js" charset="utf-8"></script>
+<script th:src="@{/js/jquery-3.4.1/jquery-3.4.1.min.js}" src="../../static/js/jquery-3.4.1/jquery-3.4.1.min.js" charset="utf-8" type="text/javascript"></script>
+<script th:src="@{/js/http.js}" src="../../static/js/http.js"></script>
+<script  type="text/javascript"  th:inline="none">
+    layui.use(['form', 'table'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            table = layui.table;
+
+        table.render({
+            elem: '#currentTableId',
+            url: '/feedback/list',
+            toolbar: '#toolbarDemo',
+            cellMinWidth: 80,
+            defaultToolbar: ['filter', 'exports', 'print', {
+                title: '提示',
+                layEvent: 'LAYTABLE_TIPS',
+                icon: 'layui-icon-tips'
+            }],
+            cols: [[
+                {type: "checkbox"},
+                {field: 'id',title: '反馈号', sort: true, align: 'center'},
+                {field: 'type', title: '反馈类型', sort: true,
+                    templet:function typeFormatter(value) {
+                        if (value.type === 3)
+                            return 'BUG反馈';
+                        else if (value.type === 2)
+                            return '意见反馈';
+                        else if (value.type === 1)
+                            return '订单反馈';
+                    }
+                },
+                {field: 'status', title: '反馈状态', sort: true, align: 'center',
+                    templet:function statusFormatter(value) {
+                        if (value.status === 3)
+                            return '<span style="color:green">处理完毕</span>';
+                        else if (value.status === 2)
+                            return '<span style="color:#ffdb75">处理中</span>';
+                        else if (value.status === 1)
+                            return '<span style="color:grey">等待处理</span>';
+                    }
+                },
+                {field: 'orderId',  title: '订单号',align:'left'},
+                {field: 'content', title: '反馈内容', align: 'center'},
+                {field: 'handlerName', title: '处理人', align: 'center'},
+                {field: 'result', title: '处理结果', align: 'center'},
+                {field: 'createDate',title: '反馈时间', sort: true, align: 'left'},
+                {field: 'updateDate', title: '处理时间', sort: true, align: 'left'}
+            ]],
+            limits: [10, 15, 20, 25, 50, 100],
+            limit: 15,
+            page: true,
+            parseData: function(res){
+                console.log(res);
+                return {
+                    "code": 0,
+                    "msg": "",
+                    "count": res.total,
+                    "data":res.rows
+                }
+            },
+            skin: 'line'
+        });
+
+        //执行反馈相关操作
+        window.handleFeedback = function (id) {
+            layer.prompt({title:"处理中", formType:2},function(val, index) {
+                sendJson(HTTP.POST, "/feedback/deal", {
+                    "id": id,
+                    "status": 2,
+                    "result": val
+                }, false, function (res) {
+                    if (res.code === 0) {
+                        layer.msg("操作成功", {icon: 1});
+                        layer.close(index);
+                        table.reload('currentTableId', {url:'/feedback/list', page:1});
+                    }
+                }, function () {
+                    layer.msg("未知错误", {icon: 2});
+                });
+            });
+        };
+
+        window.closeFeedback = function(id) {
+            layer.prompt({title:"处理完毕", formType:2},function(val, index) {
+                sendJson(HTTP.POST, "/feedback/deal", {
+                    "id": id,
+                    "status": 3,
+                    "result": val
+                }, false, function (res) {
+                    if (res.code === 0) {
+                        layer.msg("操作成功", {icon: 1});
+                        layer.close(index);
+                        table.reload('currentTableId', {url:'/feedback/list', page:1});
+                    }
+                }, function () {
+                    layer.msg("未知错误", {icon: 2});
+                });
+            });
+        }
+
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function () {
+            //执行搜索重载
+            table.reload('currentTableId', {
+                url:'/feedback/list',
+                page: {
+                    curr: 1
+                }, where: {
+                    type: $("#inputType").val(),
+                    id: $("#inputId").val(),
+                    status: $("#inputStatus").val(),
+                    startDate: $("#inputStartDate").val(),
+                    endDate:$("#inputEndDate").val()
+                }
+            });
+
+            return false;
+        });
+
+        /**
+         * toolbar监听事件
+         */
+        table.on('toolbar(currentTableFilter)', function (obj) {
+            if (obj.event === 'refresh') {  // 监听刷新操作
+                $("#inputType").val(-1);
+                $("#inputId").val("");
+                $("#inputStatus").val(-1);
+                $("#inputStartDate").val("");
+                $("#inputEndDate").val("");
+                form.render(); //重置刷新表单
+                table.reload('currentTableId', {
+                    url:'/feedback/list',
+                    page: {curr: 1}, where: {
+                        type:null,
+                        id:null,
+                        status:null,
+                        startDate:null,
+                        endDate:null
+                    }
+                });
+            }
+            else if (obj.event === 'cancel'){
+                let checkStatus = table.checkStatus('currentTableId');
+                if (checkStatus.data.length > 0){
+                    let ids = new Array();
+                    for (let i = 0; i < checkStatus.data.length; i++) {
+                        if (checkStatus.data[i].status === 1) {
+                            ids.push(checkStatus.data[i].id);
+                        }
+                    }
+                    if (ids.length === 0) {
+                        layer.msg("选中的没有可撤销的订单", {icon: 7});
+                        return false;
+                    } else {
+                        layer.confirm("撤销的反馈号为：" + ids + "，确认执行？", {
+                            btn: ['确定','取消']
+                        }, function(){
+                            sendArray(HTTP.POST, "/feedback/batch-cancel", {"ids": ids}, false, function (res) {
+                                if(res.code === 0) {
+                                    layer.msg("成功，撤销" + res.data.success + "个，失败" + res.data.error + "个",{icon:1});
+                                    table.reload('currentTableId', {
+                                        url: '/feedback/list',
+                                        page: {curr: 1}, where: {
+                                            type:null,
+                                            id:null,
+                                            status:null,
+                                            startDate:null,
+                                            endDate:null
+                                        }
+                                    });
+                                }
+                            }, function () {
+                                layer.msg("未知错误",{icon:2});
+                            });
+                        }, function(){
+                        });
+                    }
+                }
+            }
+        });
+
+    });
+</script>
 </body>
 </html>

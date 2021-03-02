@@ -31,8 +31,8 @@ public class AdminPageController {
     @Autowired
     private UserService userService;
 
-    @Resource
-    private RedisTemplate<String, User> redisTemplate;
+//    @Resource
+//    private RedisTemplate<String, User> redisTemplate;
 
     @RequestMapping("/main")
     public String showAdminPage(@AuthenticationPrincipal User user, ModelMap map){
@@ -85,8 +85,8 @@ public class AdminPageController {
             return ResponseResult.failure(ResponseErrorCodeEnum.OPERATION_ERROR);
         }
         System.out.println("修改后的号码："+user.getTel());
-        redisTemplate.opsForHash().delete(RedisKeyConstant.SYS_USER,user.getId(),user);
-        System.out.println(redisTemplate.opsForHash().get(RedisKeyConstant.SYS_USER, user.getId()));
+//        redisTemplate.opsForHash().delete(RedisKeyConstant.SYS_USER,user.getId(),user);
+//        System.out.println(redisTemplate.opsForHash().get(RedisKeyConstant.SYS_USER, user.getId()));
         return ResponseResult.success();
     }
 

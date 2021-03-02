@@ -18,25 +18,31 @@
         {
           "title": "立即下单",
           "href": "/user/place",
-          "icon": "fa fa-dot-circle-o",
+          "icon": "fa fa-cart-arrow-down",
           "target": "_self"
         },
         {
           "title": "我的订单",
           "href": "/user/history",
-          "icon": "fa fa-adn",
+          "icon": "fa fa-list",
           "target": "_self"
         },
         {
-          "title": "回收站",
-          "href": "/user/recycle",
-          "icon": "fa fa-adn",
+          "title": "立即反馈",
+          "href": "/user/toFeedback",
+          "icon": "fa fa-edit",
           "target": "_self"
         },
         {
-          "title": "评价反馈",
+          "title": "我的反馈",
           "href": "/user/feedback",
-          "icon": "fa fa-adn",
+          "icon": "fa fa-file-text-o",
+          "target": "_self"
+        },
+        {
+          "title": "订单回收站",
+          "href": "/user/recycle",
+          "icon": "fa fa-trash-o",
           "target": "_self"
         }
       ]

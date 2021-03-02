@@ -2,12 +2,12 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
-    <title>基本资料</title>
+    <title>基本资料-快递代拿系统</title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <link rel="stylesheet" th:href="@{/layui/css/layui.css}"href="../static/layui/css/layui.css" media="all">
-    <link rel="stylesheet" th:href="@{/css/public.css}" href="../static/css/public.css" media="all">
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}"href="../../static/layui/css/layui.css" media="all">
+    <link rel="stylesheet" th:href="@{/css/public.css}" href="../../static/css/public.css" media="all">
     <style>
         .layui-form-item .layui-input-company {width: auto;padding-right: 10px;line-height: 38px;}
     </style>
@@ -33,6 +33,16 @@
                 </div>
             </div>
             <div class="layui-form-item">
+                <label class="layui-form-label">账户余额</label>
+                <div class="layui-input-block">
+                    <p class="form-label-col layui-col-md1"  id="account"
+                       th:style="${info.account == null ? 'color:gray' : ''}"
+                       th:text="${info.account != null ? info.account : '0'}" >0.00元</p>
+                    <a href="javascript:void(0)" onclick="pay()" class="form-label-col layui-col-md1" style="color: #0000FF;" >充值</a>
+                </div>
+
+            </div>
+            <div class="layui-form-item">
                 <label class="layui-form-label">手机号码</label>
                 <div class="layui-input-block">
                     <p class="layui-form-label-col" id="tel"
@@ -51,21 +61,6 @@
             </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">学号</label>
-                <div class="layui-input-block">
-                    <span class="layui-form-label-col">13178978</span>
-                </div>
-            </div>
-            <hr>
-            <h2>身份信息</h2>
-            <hr>
-            <div class="layui-form-item">
-                <label class="layui-form-label">真实姓名</label>
-                <div class="layui-input-block">
-                    <span class="layui-form-label-col"  contenteditable="true"></span>
-                </div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">身份证号</label>
                 <div class="layui-input-block">
                     <span class="layui-form-label-col"></span>
                 </div>
@@ -86,10 +81,10 @@
         </div>
     </div>
 </div>
-<script th:src="@{/js/jquery-3.4.1/jquery-3.4.1.min.js}" src="../static/js/jquery-3.4.1/jquery-3.4.1.min.js" charset="utf-8" type="text/javascript"></script>
+<script th:src="@{/js/jquery-3.4.1/jquery-3.4.1.min.js}" src="../../static/js/jquery-3.4.1/jquery-3.4.1.min.js" charset="utf-8" type="text/javascript"></script>
 <script th:src="@{/layui/layui.js}" src="../../static/layui/layui.js" charset="utf-8"></script>
 <script th:src="@{/js/lay-config.js}" src="../../static/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
-<script th:src="@{/js/http.js}" src="../static/js/http.js"></script>
+<script th:src="@{/js/http.js}" src="../../static/js/http.js"></script>
 <script>
     layui.use(['form','miniTab'], function () {
         var form = layui.form,
@@ -97,16 +92,10 @@
             $ = layui.jquery,
             miniTab = layui.miniTab;
 
-        //监听提交
-        // form.on('submit(saveBtn)', function (data) {
-        //     var index = layer.alert(JSON.stringify(data.field), {
-        //         title: '最终的提交信息'
-        //     }, function () {
-        //         layer.close(index);
-        //         miniTab.deleteCurrentByIframe();
-        //     });
-        //     return false;
-        // });
+
+        window.pay = function () {
+            layer.msg("充值金额");
+        }
 
         //修改信息点击事件
         $("#ModifyInfo").on("click",function(){

@@ -57,8 +57,8 @@ public class UserSeviceImpl extends ServiceImpl<UserMapper, User> implements Use
     @Autowired
     private UserEvaluateService userEvaluateService;
 
-    @Resource
-    private RedisTemplate<String, User> redisTemplate;
+//    @Resource
+//    private RedisTemplate<String, User> redisTemplate;
 
     /**
      * Description:查询用户信息，校验输入登录用户信息是否存在且正确
@@ -225,17 +225,17 @@ public class UserSeviceImpl extends ServiceImpl<UserMapper, User> implements Use
         return username;
     }
 
-    @Override
-    public User getById(Serializable id) {
-        User user = (User) redisTemplate.opsForHash().get(RedisKeyConstant.SYS_USER, id);
-        if(user != null) {
-            return user;
-        }
-        user = super.getById(id);
-
-        redisTemplate.opsForHash().put(RedisKeyConstant.SYS_USER, id, user);
-        return user;
-    }
+//    @Override
+//    public User getById(Serializable id) {
+//        User user = (User) redisTemplate.opsForHash().get(RedisKeyConstant.SYS_USER, id);
+//        if(user != null) {
+//            return user;
+//        }
+//        user = super.getById(id);
+//
+//        redisTemplate.opsForHash().put(RedisKeyConstant.SYS_USER, id, user);
+//        return user;
+//    }
 
     private List<AdminUserInfoVO> convert(List<User> users) {
         if(CollectionUtils.isListEmpty(users)) {

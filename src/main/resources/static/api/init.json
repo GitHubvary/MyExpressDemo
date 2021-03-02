@@ -18,25 +18,25 @@
         {
           "title": "用户列表",
           "href": "/admin/userList",
-          "icon": "fa fa-dot-circle-o",
+          "icon": "fa fa-list",
           "target": "_self"
         },
         {
           "title": "订单列表",
           "href": "/admin/order",
-          "icon": "fa fa-adn",
+          "icon": "fa fa-list",
           "target": "_self"
         },
         {
           "title": "反馈列表",
           "href": "/admin/feedback",
-          "icon": "fa fa-adn",
+          "icon": "fa fa-list",
           "target": "_self"
         },
         {
           "title": "订单回收",
           "href": "/admin/recycle",
-          "icon": "fa fa-adn",
+          "icon": "fa fa-trash-o",
           "target": "_self"
         }
       ]

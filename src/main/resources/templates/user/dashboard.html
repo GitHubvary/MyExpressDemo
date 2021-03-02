@@ -1,10 +1,89 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"  xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>主面板</title>
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}" href="../../static/layui/css/layui.css" media="all">
+    <link rel="stylesheet" th:href="@{/lib/font-awesome-4.7.0/css/font-awesome.min.css}" href="../../static/lib/font-awesome-4.7.0/css/font-awesome.min.css" media="all">
+    <link rel="stylesheet" th:href="@{/css/public.css}" href="../../static/css/public.css" media="all">
 </head>
+<style>
+    .layui-top-box {padding:40px 20px 20px 20px;color:#fff}
+    .panel {margin-bottom:17px;background-color:#fff;border:1px solid transparent;border-radius:3px;-webkit-box-shadow:0 1px 1px rgba(0,0,0,.05);box-shadow:0 1px 1px rgba(0,0,0,.05)}
+    .panel-body {padding:15px}
+    .panel-title {margin-top:0;margin-bottom:0;font-size:14px;color:inherit}
+    .label {display:inline;padding:.2em .6em .3em;font-size:75%;font-weight:700;line-height:1;color:#fff;text-align:center;white-space:nowrap;vertical-align:baseline;border-radius:.25em;margin-top: .3em;}
+    .layui-red {color:red}
+    .main_btn > p {height:40px;}
+</style>
 <body>
-<h1>仪表盘</h1>
+<div class="layuimini-container">
+    <div class="layuimini-main layui-top-box">
+        <div class="layui-row layui-col-space10">
+
+            <div class="layui-col-md4">
+                <div class="col-xs-6 col-md-3">
+                    <div class="panel layui-bg-cyan">
+                        <div class="panel-body">
+                            <div class="panel-title">
+                                <span class="label pull-right layui-bg-blue">实时</span>
+                                <h5>用户统计</h5>
+                            </div>
+                            <div class="panel-content">
+                                <h1 class="no-margins">1234</h1>
+                                <div class="stat-percent font-bold text-gray"><i class="fa fa-commenting"></i>
+                                    <p ></p>
+                                    <p ></p>
+                                    <p ></p>
+                                </div>
+                                <small>当前分类总记录数</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="layui-col-md4">
+                <div class="col-xs-6 col-md-3">
+                    <div class="panel layui-bg-green">
+                        <div class="panel-body">
+                            <div class="panel-title">
+                                <span class="label pull-right layui-bg-orange">实时</span>
+                                <h5>订单统计</h5>
+                            </div>
+                            <div class="panel-content">
+                                <h1 class="no-margins">1234</h1>
+                                <div class="stat-percent font-bold text-gray"><i class="fa fa-commenting"></i> 1234</div>
+                                <small>当前分类总记录数</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="layui-col-md4">
+                <div class="col-xs-6 col-md-3">
+                    <div class="panel layui-bg-orange">
+                        <div class="panel-body">
+                            <div class="panel-title">
+                                <span class="label pull-right layui-bg-cyan">实时</span>
+                                <h5>反馈统计</h5>
+                            </div>
+                            <div class="panel-content">
+                                <h1 class="no-margins">1234</h1>
+                                <div class="stat-percent font-bold text-gray"><i class="fa fa-commenting"></i> 1234</div>
+                                <small>当前分类总记录数</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script th:src="@{/layui/layui.js}" src="../../static/layui/layui.js" charset="utf-8"></script>
 </body>
 </html>

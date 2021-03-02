@@ -9,6 +9,17 @@ body {
     text-align:right;
 }
 
+a:hover {
+    cursor:pointer;
+}
+
+.form-label-col {
+    display: block;
+    padding: 9px 0;
+    line-height: 20px;
+    text-align: left
+}
+
 .layuimini-container {
     border: 1px solid #f2f2f2;
     border-radius: 5px;

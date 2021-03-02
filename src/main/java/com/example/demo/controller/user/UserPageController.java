@@ -38,16 +38,7 @@ public class UserPageController {
      */
     @RequestMapping("/dashboard")
     public String showDashboardPage(@AuthenticationPrincipal User user, ModelMap map) {
-        String frontName = user.getUsername();
-        map.put("frontName", frontName);
-
         Map<String, Integer> data = userService.getAdminDashboardData();
-
-        map.put("userTodayCount", data.get("today"));
-        map.put("userTotalCount", data.get("total"));
-        map.put("userDisableCount", data.get("disEnable"));
-        map.put("userLockCount", data.get("lock"));
-
         return "user/dashboard";
     }
 
@@ -68,14 +59,21 @@ public class UserPageController {
      */
 
     @RequestMapping("/place")
-    public String showPlacePage(@AuthenticationPrincipal User user, ModelMap map){
-        String frontName = user.getUsername();
-        map.put("frontName", frontName);
+    public String showPlacePage(@AuthenticationPrincipal User user){
         return "user/placeOrder";
     }
 
     /**
      * Description:下单页面
+     */
+
+    @RequestMapping("/toFeedback")
+    public String showToFeedbackPage(@AuthenticationPrincipal User user){
+        return "user/toFeedback";
+    }
+
+    /**
+     * Description:历史订单
      */
 
     @RequestMapping("/history")
@@ -94,7 +92,7 @@ public class UserPageController {
     }
 
     /**
-     * 评价反馈页面
+     * 我的反馈页面
      */
     @RequestMapping("/feedback")
     public String showFeedback() {
