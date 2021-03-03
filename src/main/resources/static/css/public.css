@@ -9,8 +9,32 @@ body {
     text-align:right;
 }
 
+#orderForm {
+    border-radius: 5px;
+    border: 2px solid #009688;
+    /*box-shadow: 0 0 10px 3px #5FB878;*/
+}
+
+#payInfoForm {
+    border-radius: 5px;
+    border: 2px solid #FFB800;
+    /*box-shadow: 0 0 10px 3px orange;*/
+}
+
+a {
+    color: #0000FF;
+    text-decoration: underline
+}
+
 a:hover {
     cursor:pointer;
+    text-decoration: none;
+    color: #2f4056;
+}
+
+.layui-form-item h3 {
+    font-weight: bold;
+    font-family: "Adobe 楷体 Std R";
 }
 
 .form-label-col {

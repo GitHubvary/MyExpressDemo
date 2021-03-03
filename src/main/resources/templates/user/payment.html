@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>支付页面-快递代拿系统</title>
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}" href="../../static/layui/css/layui.css" media="all">
+    <link rel="stylesheet" th:href="@{/css/public.css}" href="../../static/css/public.css" media="all">
+</head>
+<body>
+<div class="layuimini-container layuimini-main">
+    <div class="layui-row">
+        <div class="layui-col-md6" id="orderForm">
+            <h2 style="margin-left: 70px;">确认订单信息</h2>
+            <hr>
+            <form class="layui-form layuimini-form">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">收件人姓名</label>
+                    <div class="layui-col-md6">
+                        <h3  class="layui-form-label-col" id="expressName" th:text="${order.recName}">黄健</h3>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">联系人手机号</label>
+                    <div class="layui-col-md3">
+                        <h3  class="layui-form-label-col" id="expressTel" th:text="${order.recTel}">13197846787</h3>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">取货码</label>
+                    <div class="layui-col-md3">
+                        <h3  class="layui-form-label-col" id="expressOdd" th:text="${order.odd}">M-7-123</h3>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">快递公司</label>
+                    <div class="layui-col-md3">
+                        <h3  class="layui-form-label-col" id="expressCompany" th:text="${company}">申通快递</h3>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">快递取件地址</label>
+                    <div class="layui-col-md5">
+                        <h3  class="layui-form-label-col" id="expressAddress" th:text="${order.address}">C3</h3>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">收件地址</label>
+                    <div class="layui-col-md5">
+                        <h3  class="layui-form-label-col" id="expressRecAddress" th:text="${order.recAddress}">C19</h3>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">备注（可选）</label>
+                    <div class="layui-col-md5">
+                        <h3  class="layui-form-label-col" id="expressRemark" th:text="${order.remark}">快点</h3>
+                    </div>
+                </div>
+                <hr>
+            </form>
+        </div>
+        <div class="layui-col-md6">
+            <h2 style="margin-left: 70px;">填写支付信息</h2>
+            <hr>
+            <div class="layui-form layuimini-form">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">支付账户</label>
+                    <div class="layui-col-md6">
+                        <h3  class="layui-form-label-col"  th:text="${frontName}">黄健</h3>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">账户余额</label>
+                    <div class="layui-input-block">
+                        <h3  class="form-label-col layui-col-md3"><span th:text="${account}">10000000.00</span>元</h3>
+                        <a href="javascript:void(0)" onclick="pay()" class="form-label-col layui-col-md2"  >充值</a>
+                    </div>
+                </div>
+                <div class="layui-form-item" id="payForm">
+                    <label class="layui-form-label">支付金额</label>
+                    <div class="layui-input-block">
+                        <h3 class="form-label-col layui-col-md3" ><span lang="totalPrice">0.00</span>元</h3>
+                        <button type="button" class="layui-btn  layui-btn-normal" onclick="addPackage()">添加包裹</button>
+                        <button type="button" class="layui-btn  layui-btn-danger" onclick="deletePackage()">删除包裹</button>
+                    </div>
+                </div>
+                <form  id="packageForm" class="layui-form layuimini-form"></form>
+                <hr>
+                <form class="layui-form layuimini-form" id="alipayForm" action="/order/alipay" method="post" style="margin-left: 110px" >
+                    <div class="layui-form-item">
+
+                    <div class="layui-form-label" >
+                        <input type="hidden" id="alipayMoney" name="money">
+                        <button  class="layui-btn">确认支付</button>
+                    </div>
+
+                    <div class="layui-form-label">
+                        <button type="button" class="layui-btn  layui-btn-warm" id="back">返回修改</button>
+                    </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script th:src="@{/js/jquery-3.4.1/jquery-3.4.1.min.js}" src="../../static/js/jquery-3.4.1/jquery-3.4.1.min.js" charset="utf-8" type="text/javascript"></script>
+<script th:src="@{/layui/layui.js}" src="../../static/layui/layui.js" charset="utf-8"></script>
+<script th:src="@{/js/lay-config.js}" src="../../static/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
+<script th:src="@{/js/http.js}" src="../../static/js/http.js"></script>
+<script>
+    layui.use(['form','miniTab'], function () {
+        var form = layui.form,
+            layer = layui.layer,
+            $ = layui.jquery,
+            miniTab = layui.miniTab;
+
+
+        window.pay = function () {
+            layer.msg("充值金额");
+        };
+
+        window.addPackage = function () {
+            var html = '<div class="layui-form-item">\n' +
+                '                <label class="layui-form-label">预估重量</label>\n' +
+                '                <div class="layui-col-md5">\n' +
+                '                    <input type="number"  name="price"  placeholder="请输入包裹预估重量(以千克为单位)" autocomplete="off" \n' +
+                '                           class="layui-input" onkeyup="this.value=this.value.replace(/\\s+/g,\'\')" onchange="updatePrice()" onkeyup="updatePrice()">\n' +
+                '                </div>\n' +
+                '            </div>';
+            $("#packageForm").append(html);
+        };
+
+        window.deletePackage = function () {
+            $("#packageForm").children().last().remove();
+            updatePrice();
+        };
+
+        var total=0;
+
+        window.updatePrice =function () {
+             total = 0;
+            $("input[name='price']").each(function(){
+                var weight = $(this).val();
+                if(weight !== "") {
+                    if(!isNaN(weight)) {
+                        weight = parseFloat(weight);
+                        var tmp = 0;
+                        // 如果小于500g，2元
+                        if(weight < 0.5 && weight >0)
+                            tmp = 2;
+                        else if(weight < 1 && weight >0)
+                            tmp = 3;
+                        else if(weight >= 1)
+                            // 向上取整
+                            tmp = 4 * Math.ceil(weight);
+                        total += tmp;
+                    } else {
+                        // 如果不是数字，将input值修改为空
+                        $(this).val("");
+                    }
+                }
+            });
+            // 两位小数，四舍五入
+            total = total.toFixed(2);
+            $("span[lang='totalPrice']").each(function() {
+                $(this).text(total);
+            });
+        }
+
+        $("#back").on("click",function () {
+            // history.back(-1);
+            window.location.href = document.referrer;
+        });
+
+
+
+
+
+    });
+</script>
+</body>
+</html>

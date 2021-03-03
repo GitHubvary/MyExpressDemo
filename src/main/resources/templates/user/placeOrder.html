@@ -11,7 +11,7 @@
     <div class="layuimini-main">
         <h2 style="margin-left: 70px;">填写订单信息</h2>
         <hr>
-        <form class="layui-form layuimini-form">
+        <form class="layui-form layuimini-form" action="/user/toPay" method="post">
             <div class="layui-form-item">
                 <label class="layui-form-label">收件人姓名</label>
                 <div class="layui-col-md3">
@@ -66,7 +66,7 @@
 
             <div class="layui-form-item " style="margin-left: 110px">
                 <div class="layui-form-label">
-                    <button type="button" lay-submit lay-filter="toPay" class="layui-btn">前往支付</button>
+                    <button lay-submit lay-filter="toPay" class="layui-btn" id="payBtn" onClick="storage()">前往支付</button>
                 </div>
                 <div class="layui-form-label">
                     <button type="reset" class="layui-btn  layui-btn-danger">重新填写</button>
@@ -92,6 +92,66 @@
                 }
             }
         });
+
+        // 加载快递公司数据
+        sendJson(HTTP.GET, "/company", null, false, function (res) {
+            if (res.code === 0) {
+                let html = '', data = res.data;
+                for(let i = 0; i<data.length; i++) {
+                    html += '<option value="'+data[i].id+'">'+data[i].name+ '</option>\n';
+                }
+                $("#inputCompany").append(html);
+                form.render();
+            } else {
+                layer.msg(res.msg, {icon: 2});
+            }
+        }, function () {
+            layer.msg("未知错误", {icon: 2});
+        });
+
+        $(document).ready(function () {
+            var name = sessionStorage.getItem("name");
+            var tel = sessionStorage.getItem("tel");
+            var odd = sessionStorage.getItem("odd");
+            var company= sessionStorage.getItem("company");
+            var address = sessionStorage.getItem("address");
+            var recAddress = sessionStorage.getItem("recAddress");
+            var remark = sessionStorage.getItem("remark");
+
+
+            $('#inputName').val(name);
+            $('#inputTel').val(tel);
+            $('#inputOdd').val(odd);
+            $('#inputAddress').val(address);
+            $('#inputRecAddress').val(recAddress);
+            $('#inputRemark').val(remark);
+            $('#inputCompany').val(company);
+            form.render('select');
+            sessionStorage.clear();
+        });
+
+
+
+        window.storage = function () {
+            sessionStorage.clear();
+            var name = $('#inputName').val();
+            var tel = $('#inputTel').val();
+            var odd = $('#inputOdd').val();
+            var company= $('#inputCompany option:selected').val();
+            var address = $('#inputAddress').val();
+            var recAddress = $('#inputRecAddress').val();
+            var remark = $('#inputRemark').val();
+
+            sessionStorage.setItem("name",name);
+            sessionStorage.setItem("tel",tel);
+            sessionStorage.setItem("odd",odd);
+            sessionStorage.setItem("company",company);
+            sessionStorage.setItem("address",address);
+            sessionStorage.setItem("recAddress",recAddress);
+            sessionStorage.setItem("remark",remark);
+        }
+
+
     })
 </script>
 </body>

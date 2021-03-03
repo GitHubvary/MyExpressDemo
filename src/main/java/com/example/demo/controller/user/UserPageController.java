@@ -1,7 +1,9 @@
 package com.example.demo.controller.user;
 
+import com.example.demo.domain.bean.OrderInfo;
 import com.example.demo.domain.bean.User;
 import com.example.demo.domain.vo.user.UserInfoVO;
+import com.example.demo.service.DataCompanyService;
 import com.example.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.servlet.http.HttpSession;
 import java.util.Map;
 
 /**
@@ -23,6 +26,9 @@ public class UserPageController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private DataCompanyService dataCompanyService;
 
 
     @RequestMapping("/main")
@@ -97,6 +103,16 @@ public class UserPageController {
     @RequestMapping("/feedback")
     public String showFeedback() {
         return "user/feedback";
+    }
+
+    @RequestMapping("/toPay")
+    public String placeOrder(OrderInfo orderInfo, ModelMap map, HttpSession session, @AuthenticationPrincipal User user) {
+        map.put("frontName", userService.getFrontName(user));
+        map.put("order", orderInfo);
+        map.put("company", dataCompanyService.getByCache(orderInfo.getCompany()).getName());
+        session.setAttribute("SESSION_LATEST_EXPRESS", orderInfo);
+        System.out.println(session.getAttribute("SESSION_LATEST_EXPRESS"));
+        return "user/payment";
     }
 
 }

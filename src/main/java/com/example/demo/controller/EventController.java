@@ -1,17 +1,22 @@
 package com.example.demo.controller;
 
 import com.example.demo.common.util.StringUtils;
+import com.example.demo.domain.bean.DataCompany;
 import com.example.demo.domain.enums.ResponseErrorCodeEnum;
 import com.example.demo.domain.ResponseResult;
 import com.example.demo.domain.bean.User;
 import com.example.demo.domain.enums.UserRoleEnum;
+import com.example.demo.service.DataCompanyService;
 import com.example.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.List;
 
 /**
  * Description:
@@ -24,40 +29,8 @@ public class EventController {
     @Autowired
     private UserService userService;
 
-    /**
-     * Description:登录事件处理,跳转到相应的首页
-     * @param:账号密码
-     * @return:访问页面
-    */
-//    @RequestMapping("/")
-//    public String login(@RequestParam("username") String username,
-//                      @RequestParam("password") String password,
-//                      HttpSession session,Model model){
-//        System.out.println("登录到首页");
-//        User user = userService.getByInfo(username,password);
-//        if (user != null){
-//            session.setAttribute("user",user);
-//            model.addAttribute("flag",null);
-//            System.out.println("查询成功");
-//            switch (user.getRole().getType()){  //不同用户身份跳转不同页面
-//                case 1:
-//                    System.out.println("跳转到普通用户页面");
-//                    return "/user/user";
-//                case 2:
-//                    System.out.println("跳转到配送员页面");
-//                    return "/courier/courier";
-//                case 3:
-//                    System.out.println("跳转到管理员页面");
-//                    return "/admin/admin";
-//                default:
-//                    return "login";
-//            }
-//        } else {
-//            model.addAttribute("flag","用户名或密码错误");
-//            System.out.println("查询失败");
-//             return "login";
-//        }
-//    }
+    @Autowired
+    private DataCompanyService dataCompanyService;
 
     /**
      * Description:注册事件处理
@@ -146,5 +119,15 @@ public class EventController {
     }
 
 
+    /**
+     * 读取快递公司数据
+     */
+    @GetMapping("/company")
+    @ResponseBody
+    public ResponseResult listCompany() {
+        List<DataCompany> list = dataCompanyService.listAllByCache();
+        System.out.println(list.size());
+        return ResponseResult.success(list);
+    }
 
 }
