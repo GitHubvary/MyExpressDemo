@@ -12,6 +12,7 @@ import com.example.demo.domain.vo.courier.CourierOrderVO;
 import com.example.demo.domain.vo.user.OrderDescVO;
 import com.example.demo.domain.vo.user.UserOrderVO;
 
+import java.math.BigDecimal;
 import java.util.Map;
 
 public interface OrderInfoService extends IService<OrderInfo> {
@@ -37,7 +38,7 @@ public interface OrderInfoService extends IService<OrderInfo> {
     /**
      * 生成订单 & 订单支付
      */
-    ResponseResult createOrder(OrderInfo orderInfo, double money, String uid);
+    ResponseResult createOrder(OrderInfo orderInfo, BigDecimal toPayMoney,BigDecimal AccountMoney, String uid);
 
     OrderDescVO getDescVO(String orderId);
 

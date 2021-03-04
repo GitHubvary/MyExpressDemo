@@ -1,12 +1,15 @@
 package com.example.demo;
 
 
+import com.example.demo.common.util.RandomUtils;
 import com.example.demo.domain.bean.User;
 import com.example.demo.mapper.UserMapper;
 import com.example.demo.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.Random;
 
 @SpringBootTest
 class DemoApplicationTests {
@@ -27,6 +30,12 @@ class DemoApplicationTests {
         System.out.println(user2.getHasEnable());
         User user3 = userMapper.selectById(10);
         System.out.println(user3.getHasEnable());
+    }
+
+    @Test
+    void textRandom() {
+        String num = RandomUtils.stringWithNumber(4);
+        System.out.println(num);
     }
 
 }

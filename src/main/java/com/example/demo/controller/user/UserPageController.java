@@ -109,6 +109,7 @@ public class UserPageController {
     public String placeOrder(OrderInfo orderInfo, ModelMap map, HttpSession session, @AuthenticationPrincipal User user) {
         map.put("frontName", userService.getFrontName(user));
         map.put("order", orderInfo);
+        map.put("account",user.getAccount());
         map.put("company", dataCompanyService.getByCache(orderInfo.getCompany()).getName());
         session.setAttribute("SESSION_LATEST_EXPRESS", orderInfo);
         System.out.println(session.getAttribute("SESSION_LATEST_EXPRESS"));

@@ -34,13 +34,10 @@ public class OrderPayment {
      */
     private BigDecimal payment;
     /**
-     * 支付流水号
+     * 支付码
      */
     private String paymentId;
-    /**
-     * 收款方
-     */
-    private String seller;
+
     /**
      * 备注
      */

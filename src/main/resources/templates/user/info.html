@@ -45,9 +45,11 @@
             <div class="layui-form-item">
                 <label class="layui-form-label">手机号码</label>
                 <div class="layui-input-block">
+                    <form id="changeTelForm" method="post">
                     <p class="layui-form-label-col" id="tel"
                        th:style="${info.tel == null ? 'color:gray' : ''}"
                        th:text="${info.tel != null ? info.tel : '您未设置手机号。'}" ></p>
+                    </form>
                 </div>
             </div>
             <hr>
@@ -57,12 +59,6 @@
                 <label class="layui-form-label">学校名称</label>
                 <div class="layui-input-block">
                     <span class="layui-form-label-col" name="schoolName">华南理工大学广州学院</span>
-                </div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">学号</label>
-                <div class="layui-input-block">
-                    <span class="layui-form-label-col"></span>
                 </div>
             </div>
             <hr>
@@ -81,6 +77,29 @@
         </div>
     </div>
 </div>
+
+
+<!-- 充值账户模态框 -->
+<div class="layuimini-container" id="addMoney" style="display: none">
+    <div class="layuimini-main">
+        <div class="layui-form layuimini-form">
+            <div class="layui-form-item layui-row">
+                <label class="layui-form-label">充值金额:</label>
+                <div class="layui-col-md3">
+                    <input type="text" id="money" required lay-verify="required|money" placeholder="请输入充值金额,以元为单位。" autocomplete="off"
+                           class="layui-input" onkeyup="value=value.replace(/^(0+)|[^\d.]+/g,'')" style="width: 200px;">
+                </div>
+            </div>
+            <hr>
+            <div class="layui-form-item " style="margin-left: 110px">
+                <div class="layui-form-label">
+                    <button type="button"  class="layui-btn" id="payBtn">确认支付</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script th:src="@{/js/jquery-3.4.1/jquery-3.4.1.min.js}" src="../../static/js/jquery-3.4.1/jquery-3.4.1.min.js" charset="utf-8" type="text/javascript"></script>
 <script th:src="@{/layui/layui.js}" src="../../static/layui/layui.js" charset="utf-8"></script>
 <script th:src="@{/js/lay-config.js}" src="../../static/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
@@ -89,28 +108,67 @@
     layui.use(['form','miniTab'], function () {
         var form = layui.form,
             layer = layui.layer,
-            $ = layui.jquery,
-            miniTab = layui.miniTab;
+            $ = layui.jquery;
 
 
         window.pay = function () {
-            layer.msg("充值金额");
-        }
+            layer.open(
+                {
+                    type:1,
+                    title:"充值账户",
+                    area:['450px','200px'],
+                    content:$('#addMoney')
+                }
+            );
+
+            $("#payBtn").on('click',function () {
+                let money = $("#money").val();
+                sendArray(HTTP.POST, "/addMoney", {"money":money}, false, function (res) {
+                    if (res.code === 0) {
+                        layer.msg("充值成功！", {icon: 1},500);
+                        window.setTimeout("location.reload();", 1000);
+                    } else if (res.code === 400001) {
+                        layer.msg("充值超过最大限额,请重新充值！",{icon: 2},500);
+                    } else if (res.code === 400003) {
+                        layer.msg(res.msg,{icon:2},500);
+                    }
+                }, function () {
+                    layer.msg("未知错误", {icon: 2});
+                });
+            });
+        };
 
         //修改信息点击事件
         $("#ModifyInfo").on("click",function(){
 
             //点击改变元素为可编辑输入框
-            $("span").html('<input type="email" name="email"  placeholder="请输入邮箱"  value="" class="layui-input">');
+            var value = $("#tel").text();
+
+            if (value == "手机号未设置")
+                value = "";
+
+            //点击改变元素为可编辑输入框
+            $("#tel").html('<input type="text" name="tel"  id="newTel" lay-verify="required|phone"  placeholder="请输入修改后的手机号"  value="" class="layui-col-md3" onkeyup="this.value=this.value.replace(/\\s+/g,\'\')">');
+
+            $("#newTel").val(value);
 
             $("#SaveModify").removeClass("layui-btn-disabled").siblings();
 
             $("#SaveModify").removeAttr("disabled");
         });
 
-        //保存修改按钮
-        $("#SaveModify").on("click",function () {
-            layer.msg("保存成功！");
+        //保存修改
+        form.on('submit(saveBtn)',function() {
+            sendJson(HTTP.POST, "/changeInfo", $("#changeTelForm").serialize(), false, function (res) {
+                if (res.code === 0) {
+                    layer.msg("修改成功!", {icon: 1},500);
+                    window.setTimeout("location.reload();", 1000);
+                } else {
+                    layer.msg(res.msg, {icon: 2});
+                }
+            }, function () {
+                layer.msg("未知错误", {icon: 2});
+            });
         });
 
 

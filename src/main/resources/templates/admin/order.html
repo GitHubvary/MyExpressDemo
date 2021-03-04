@@ -49,9 +49,9 @@
                                 <select id="inputPaymentStatus">
                                     <option value=-1>所有状态</option>
                                     <option value=1>等待支付</option>
-                                    <option value=2>支付关闭</option>
+<!--                                    <option value=2>支付关闭</option>-->
                                     <option value=3>支付成功</option>
-                                    <option value=4>支付结束</option>
+<!--                                    <option value=4>支付结束</option>-->
                                 </select>
                             </div>
                         </div>
@@ -107,7 +107,7 @@
             <div class="layui-form layuimini-form">
                 <div class="layui-form-item layui-row">
                     <label class="layui-form-label">配送人员</label>
-                    <div class="layui-col-md9">
+                    <div class="layui-col-md3">
                         <select id="inputCourierOption">
                             <option value=-1>未选中</option>
                         </select>
@@ -169,14 +169,14 @@
                     </div>
                 </div>
                 <hr>
+<!--                <div class="layui-form-item">-->
+<!--                    <label class="layui-form-label">支付方式</label>-->
+<!--                    <div class="layui-input-block">-->
+<!--                        <p class="layui-form-label-col" id="inputInfoPaymentType"></p>-->
+<!--                    </div>-->
+<!--                </div>-->
                 <div class="layui-form-item">
-                    <label class="layui-form-label">支付方式</label>
-                    <div class="layui-input-block">
-                        <p class="layui-form-label-col" id="inputInfoPaymentType"></p>
-                    </div>
-                </div>
-                <div class="layui-form-item">
-                    <label class="layui-form-label">流水号</label>
+                    <label class="layui-form-label">支付码</label>
                     <div class="layui-input-block">
                         <p class="layui-form-label-col" id="inputInfoPaymentId"></p>
                     </div>
@@ -257,12 +257,12 @@
                     templet: function paymentFormatter(value) {
                         if(value.paymentStatus === 1)
                             return '<span style="color:#f5a623">等待支付</span>';
-                        else if (value.paymentStatus === 2)
-                            return '<span style="color:red">支付关闭</span>';
+                        // else if (value.paymentStatus === 2)
+                        //     return '<span style="color:red">支付关闭</span>';
                         else if (value.paymentStatus === 3)
                             return '<span style="color:green">支付成功</span>';
-                        else if (value.paymentStatus === 4)
-                            return '<span style="color:grey">支付结束</span>';
+                        // else if (value.paymentStatus === 4)
+                        //     return '<span style="color:grey">支付结束</span>';
                     }
                 },
                 {field: 'orderStatus', title: '订单状态', sort: true,
@@ -341,7 +341,7 @@
                     $("#inputInfoCompany").text(data.companyName);
                     $("#inputInfoRemark").text(data.remark);
 
-                    $("#inputInfoPaymentType").text(data.paymentType);
+                    // $("#inputInfoPaymentType").text(data.paymentType);
                     $("#inputInfoPaymentId").text(data.paymentId);
                     $("#inputInfoMoney").text(data.payment);
                     $("#inputInfoPaymentStatus").text(data.paymentStatus);

@@ -92,7 +92,7 @@
                 value = "";
 
             //点击改变元素为可编辑输入框
-            $("#tel").html('<input type="text" name="tel"  id="newTel" lay-verify="required|phone"  placeholder="请输入修改后的手机号"  value="" class="layui-input" onkeyup="this.value=this.value.replace(/\\s+/g,\'\')">');
+            $("#tel").html('<input type="text" name="tel"  id="newTel" lay-verify="required|phone"  placeholder="请输入修改后的手机号"  value="" class="layui-col-md3" onkeyup="this.value=this.value.replace(/\\s+/g,\'\')">');
 
             $("#newTel").val(value);
 
@@ -105,8 +105,8 @@
         form.on('submit(saveBtn)',function() {
             sendJson(HTTP.POST, "/admin/changeAdminInfo", $("#changeTelForm").serialize(), false, function (res) {
                 if (res.code === 0) {
-                    layer.msg("修改成功!", {icon: 1},2000);
-                    window.setTimeout("location.reload();", 3000);
+                    layer.msg("修改成功!", {icon: 1},500);
+                    window.setTimeout("location.reload();", 1000);
                 } else {
                     layer.msg(res.msg, {icon: 2});
                 }

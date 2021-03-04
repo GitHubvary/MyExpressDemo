@@ -2,11 +2,16 @@ package com.example.demo.controller;
 
 import com.example.demo.common.util.StringUtils;
 import com.example.demo.domain.bean.DataCompany;
+import com.example.demo.domain.bean.OrderInfo;
+import com.example.demo.domain.bean.OrderPayment;
+import com.example.demo.domain.enums.PaymentStatusEnum;
 import com.example.demo.domain.enums.ResponseErrorCodeEnum;
 import com.example.demo.domain.ResponseResult;
 import com.example.demo.domain.bean.User;
 import com.example.demo.domain.enums.UserRoleEnum;
+import com.example.demo.exception.CustomException;
 import com.example.demo.service.DataCompanyService;
+import com.example.demo.service.OrderInfoService;
 import com.example.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,6 +21,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpSession;
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -31,6 +38,9 @@ public class EventController {
 
     @Autowired
     private DataCompanyService dataCompanyService;
+
+    @Autowired
+    private OrderInfoService orderInfoService;
 
     /**
      * Description:注册事件处理
@@ -118,6 +128,82 @@ public class EventController {
         return ResponseResult.success();
     }
 
+    @PostMapping("/addMoney")
+    @ResponseBody
+    public ResponseResult addAccount(@AuthenticationPrincipal User user,String money){
+        BigDecimal addMoney = new BigDecimal(money);
+        BigDecimal account = user.getAccount().add(addMoney);
+        BigDecimal maxAccount = new BigDecimal(10000000);
+        if (account.compareTo(maxAccount) == 1){
+            System.out.println("用户充值超过最大限额。");
+            return ResponseResult.failure(ResponseErrorCodeEnum.PARAMETER_ERROR);
+        }
+        user.setAccount(account);
+        if (!userService.updateById(user)){
+            return ResponseResult.failure(ResponseErrorCodeEnum.OPERATION_ERROR);
+        }
+        return ResponseResult.success(user.getAccount());
+    }
+
+    @PostMapping("/removeMoney")
+    @ResponseBody
+    public ResponseResult removeAccount(@AuthenticationPrincipal User user,String money){
+        BigDecimal reMoney = new BigDecimal(money);
+        BigDecimal account = user.getAccount().subtract(reMoney);
+        BigDecimal minAccount = new BigDecimal(0);
+        if (account.compareTo(minAccount) == -1){
+            System.out.println("用户扣款超过最大限额。");
+            return ResponseResult.failure(ResponseErrorCodeEnum.PARAMETER_ERROR);
+        }
+        user.setAccount(account);
+        if (!userService.updateById(user)){
+            return ResponseResult.failure(ResponseErrorCodeEnum.OPERATION_ERROR);
+        }
+        return ResponseResult.success(user.getAccount());
+    }
+
+
+    @PostMapping("/payMoney")
+    @ResponseBody
+    public ResponseResult payAccount(@AuthenticationPrincipal User user,String money, HttpSession session){
+        System.out.println(money);
+        BigDecimal payMoney = new BigDecimal(money);
+        BigDecimal account = user.getAccount();
+        OrderInfo orderInfo = (OrderInfo)session.getAttribute("SESSION_LATEST_EXPRESS");
+        if(orderInfo == null || money == null) {
+            throw new CustomException(ResponseErrorCodeEnum.PARAMETER_ERROR);
+        }
+        // 生成订单 & 订单支付
+        ResponseResult result1 = orderInfoService.createOrder(orderInfo, payMoney,account, user.getId());
+        if(result1.getCode() == ResponseErrorCodeEnum.SUCCESS.getCode()) {
+            OrderPayment orderPayment = (OrderPayment) result1.getData();
+            if (orderPayment.getPaymentStatus() == PaymentStatusEnum.WAIT_BUYER_PAY){
+                return ResponseResult.failure(ResponseErrorCodeEnum.PARAMETER_ERROR);
+            }
+            BigDecimal lastAccount = account.subtract(payMoney);
+            user.setAccount(lastAccount);
+            if (!userService.updateById(user)){
+                System.out.println("更新用户余额失败");
+                return ResponseResult.failure(ResponseErrorCodeEnum.OPERATION_ERROR);
+            }
+        }
+        return result1;
+    }
+
+    /**
+     * Description:管理员信息修改
+     */
+    @PostMapping("/changeInfo")
+    @ResponseBody
+    public ResponseResult changeAdminInfo(@AuthenticationPrincipal User user,String tel) {
+        System.out.println("用户修改前的号码："+user.getTel());
+        user.setTel(tel);
+        if(!userService.updateById(user)) {
+            return ResponseResult.failure(ResponseErrorCodeEnum.OPERATION_ERROR);
+        }
+        System.out.println("用户修改后的号码："+user.getTel());
+        return ResponseResult.success();
+    }
 
     /**
      * 读取快递公司数据
@@ -129,5 +215,7 @@ public class EventController {
         System.out.println(list.size());
         return ResponseResult.success(list);
     }
+
+
 
 }

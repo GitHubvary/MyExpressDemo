@@ -5,6 +5,7 @@ import com.example.demo.domain.ResponseResult;
 import com.example.demo.domain.bean.OrderPayment;
 import com.example.demo.domain.enums.PaymentStatusEnum;
 
+import java.math.BigDecimal;
 import java.util.Map;
 
 /**
@@ -13,9 +14,9 @@ import java.util.Map;
  */
 public interface OrderPaymentService extends IService<OrderPayment> {
     /**
-     * 创建支付宝订单
+     * 创建订单
      */
-    boolean createAliPayment(String orderId, double money, String sellerId);
+    boolean createPayment(String orderId, BigDecimal money,Integer isPay);
 
 
     /**

@@ -13,6 +13,7 @@
             info.status AS order_status,
             payment.payment AS payment,
             payment.status AS payment_status,
+            payment.payment_id AS payment_id,
             info.delete_type AS delete_type,
             info.create_date AS create_date
         FROM

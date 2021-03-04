@@ -306,8 +306,6 @@ public class OrderApiController {
     /**
      * 用户批量删除订单，仅能删除个人订单
      * 状态为订单完成或订单异常
-     * @author jitwxs
-     * @date 2019/4/24 23:08
      */
     @PostMapping("/batch-delete")
     @PreAuthorize("hasRole('ROLE_USER')")
@@ -318,8 +316,6 @@ public class OrderApiController {
     /**
      * 用户批量撤销订单，仅能撤销个人订单
      * 状态为未接单
-     * @author jitwxs
-     * @date 2019/4/25 0:11
      */
     @PostMapping("/batch-cancel")
     @PreAuthorize("hasRole('ROLE_USER')")

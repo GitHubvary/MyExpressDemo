@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.demo.common.util.RandomUtils;
 import com.example.demo.common.util.StringUtils;
 import com.example.demo.domain.ResponseResult;
 import com.example.demo.domain.bean.OrderInfo;
@@ -25,6 +26,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -70,7 +72,33 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @Override
-    public ResponseResult createOrder(OrderInfo orderInfo, double money, String uid) {
+    public ResponseResult createOrder(OrderInfo orderInfo, BigDecimal toPayMoney, BigDecimal AccountMoney, String uid) {
+        if (orderInfo.getId()!=null) {
+            String id = orderInfo.getId();
+            //处理已存在订单
+            if (orderInfoMapper.selectById(id) != null) {
+                OrderPayment payment = orderPaymentService.getById(id);
+                payment.setPayment(toPayMoney);
+                if (payment != null && payment.getPaymentStatus() == PaymentStatusEnum.WAIT_BUYER_PAY) {
+                    if (toPayMoney.compareTo(AccountMoney) == 1) {
+                        System.out.println("已存在订单钱不够");
+                        return ResponseResult.failure(ResponseErrorCodeEnum.PARAMETER_ERROR);
+                    } else {
+                        payment.setPaymentStatus(PaymentStatusEnum.TRADE_SUCCESS);
+                        payment.setPaymentId(RandomUtils.stringWithNumber(4));
+                        if (!orderPaymentService.updateById(payment)) {
+                            System.out.println("已存在更新失败");
+                            return ResponseResult.failure(ResponseErrorCodeEnum.SYSTEM_ERROR);
+                        }
+                        System.out.println("已存在更新成功");
+                        return ResponseResult.success(payment);
+                    }
+                }
+                System.out.println("已存在订单支付表为空或已支付");
+                return ResponseResult.failure(ResponseErrorCodeEnum.SYSTEM_ERROR);
+            }
+        }
+        //开启事务创建新订单
         DefaultTransactionDefinition definition = new DefaultTransactionDefinition();
         TransactionStatus status = transactionManager.getTransaction(definition);
 
@@ -79,18 +107,34 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
         if(!this.retBool(orderInfoMapper.insert(orderInfo))) {
             transactionManager.rollback(status);
+            System.out.println("插入失败");
             return ResponseResult.failure(ResponseErrorCodeEnum.ORDER_CREATE_ERROR);
         }
-
         String orderId = orderInfo.getId();
-        boolean b = orderPaymentService.createAliPayment(orderId, money, "2088102175634311");
+        if (toPayMoney.compareTo(AccountMoney) == 1){
+            boolean a = orderPaymentService.createPayment(orderId, toPayMoney,0);
+            if(!a) {
+                transactionManager.rollback(status);
+                System.out.println("创建未支付失败");
+                return ResponseResult.failure(ResponseErrorCodeEnum.ORDER_PAYMENT_CREATE_ERROR);
+            }
+
+            transactionManager.commit(status);
+            System.out.println("创建未支付成功");
+            return ResponseResult.success(orderPaymentService.getById(orderId));
+        }
+
+
+        boolean b = orderPaymentService.createPayment(orderId, toPayMoney,1);
         if(!b) {
             transactionManager.rollback(status);
+            System.out.println("创建已支付失败");
             return ResponseResult.failure(ResponseErrorCodeEnum.ORDER_PAYMENT_CREATE_ERROR);
         }
 
         transactionManager.commit(status);
-        return ResponseResult.success(orderId);
+        System.out.println("创建已支付成功");
+        return ResponseResult.success(orderPaymentService.getById(orderId));
     }
 
     @Override
@@ -112,7 +156,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 .remark(orderInfo.getRemark())
                 .orderStatus(orderInfo.getOrderStatus().getName()).build();
 
-        System.out.println("desc:"+vo.getCourierTel());
+        System.out.println("订单详情配送员手机号:"+vo.getCourierTel());
         if(StringUtils.isNotBlank(orderInfo.getCourierId())) {
             String courierFrontName = userService.getFrontName(orderInfo.getCourierId());
             vo.setCourierFrontName(courierFrontName);
@@ -141,7 +185,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         LayuiTableVO<UserOrderVO> vo = new LayuiTableVO<>();
 
         IPage<UserOrderVO> selectPage = orderInfoMapper.pageUserOrderVO(page, sql, isDelete);
-
+        System.out.println("获取订单记录"+selectPage.getRecords());
 
         for(UserOrderVO orderVO : selectPage.getRecords()) {
             // 设置快递公司

@@ -1,6 +1,7 @@
 package com.example.demo.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.demo.common.util.RandomUtils;
 import com.example.demo.domain.bean.OrderPayment;
 import com.example.demo.domain.enums.PaymentStatusEnum;
 import com.example.demo.domain.enums.PaymentTypeEnum;
@@ -20,15 +21,26 @@ public class OrderPaymentServiceImpl extends ServiceImpl<OrderPaymentMapper, Ord
     private OrderPaymentMapper orderPaymentMapper;
 
     @Override
-    public boolean createAliPayment(String orderId, double money, String sellerId) {
-        OrderPayment payment = OrderPayment.builder()
+    public boolean createPayment(String orderId, BigDecimal money,Integer isPay) {
+        if (isPay == 0){   //创建等待支付订单
+        OrderPayment noPayment = OrderPayment.builder()
                 .orderId(orderId)
                 .paymentStatus(PaymentStatusEnum.WAIT_BUYER_PAY)
+                .paymentId("")
                 .paymentType(PaymentTypeEnum.AliPay)
-                .payment(new BigDecimal(money))
-                .seller(sellerId).build();
-
-        return this.retBool(orderPaymentMapper.insert(payment));
+                .payment(money)
+                .build();
+        return this.retBool(orderPaymentMapper.insert(noPayment));
+        }
+        //创建支付成功订单
+        OrderPayment yesPayment = OrderPayment.builder()
+                .orderId(orderId)
+                .paymentStatus(PaymentStatusEnum.TRADE_SUCCESS)
+                .paymentId(RandomUtils.stringWithNumber(4))
+                .paymentType(PaymentTypeEnum.AliPay)
+                .payment(money)
+                .build();
+        return this.retBool(orderPaymentMapper.insert(yesPayment));
     }
 
     /*
