@@ -246,12 +246,12 @@
                         let result = '<button class="layui-btn layui-btn-sm" onclick="showDetail('+id+')" title="查看">查看</button>\n';
 
                         if (value.paymentStatus === 1) {
-                            result = '<button class="layui-btn layui-btn-sm layui-btn-normal" onclick="" title="支付">支付</button>\n'
+                            result = '<button class="layui-btn layui-btn-sm layui-btn-warm" onclick="payOrder('+id+')" title="支付">支付</button>\n'
                         }
 
                         // 订单评价
                         if(value.canScore === "1") {
-                            result += '<button class="layui-btn layui-btn-sm layui-btn-normal" onclick="" title="评价"></button>\n';
+                            result += '<button class="layui-btn layui-btn-sm layui-btn-normal" onclick="" title="评价">评价</button>\n';
                         }
 
                         return result;
@@ -273,6 +273,57 @@
             },
             skin: 'line'
         });
+
+        window.payOrder = function (id) {
+            //获取支付金额
+            sendJson(HTTP.GET, "/order/" + id, null, false, function (res) {
+                if (res.code !== 0) {
+                    layer.msg(res.msg, {icon: 2});
+                } else {
+                    let data = res.data;
+                    console.log("支付订单"+data.payment);
+                    $("#inputInfoMoney").text(data.payment);
+                }
+            }, function () {
+                layer.msg("未知错误", {icon: 2});
+            });
+            let payMoney = $("#inputInfoMoney").text();
+            if (payMoney == "") {
+                layer.msg("获取支付金额失败",{icon: 2});
+                return false;
+            }
+            //用户支付
+            sendArray(HTTP.POST, "/removeMoney", {"money":payMoney}, false, function (res) {
+                if (res.code === 0) {
+                    //更新支付状态
+                    sendJson(HTTP.GET, "/order/pay" + id, null, false, function (res) {
+                        if (res.code !== 0) {
+                            layer.msg(res.msg, {icon: 2});
+                        } else {
+                            layer.msg("支付成功！", {icon: 1},500);
+                            table.reload('currentTableId', {
+                                url:'/order/list',
+                                page: {curr: 1}, where: {
+                                    id:null,
+                                    status:null,
+                                    payment:null,
+                                    startDate:null,
+                                    endDate:null
+                                }
+                            });
+                        }
+                    }, function () {
+                        layer.msg("未知错误", {icon: 2});
+                    });
+                } else if (res.code === 400001) {
+                    layer.msg("支付失败，用户可用金额不够，请前往充值！",{icon: 2},500);
+                } else if (res.code === 400003) {
+                    layer.msg(res.msg,{icon:2},500);
+                }
+            }, function () {
+                layer.msg("未知错误", {icon: 2});
+            });
+        };
 
 
         //执行查看订单操作

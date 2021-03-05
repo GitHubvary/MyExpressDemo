@@ -3,6 +3,8 @@ package com.example.demo.controller.api;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.demo.common.util.StringUtils;
 import com.example.demo.domain.ResponseResult;
+import com.example.demo.domain.bean.OrderInfo;
+import com.example.demo.domain.bean.OrderPayment;
 import com.example.demo.domain.bean.User;
 import com.example.demo.domain.enums.OrderStatusEnum;
 import com.example.demo.domain.enums.PaymentStatusEnum;
@@ -12,6 +14,7 @@ import com.example.demo.domain.vo.courier.CourierOrderVO;
 import com.example.demo.domain.vo.user.OrderDescVO;
 import com.example.demo.exception.CustomException;
 import com.example.demo.service.OrderInfoService;
+import com.example.demo.service.OrderPaymentService;
 import com.example.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -33,6 +36,9 @@ public class OrderApiController {
 
     @Autowired
     private OrderInfoService orderInfoService;
+
+    @Autowired
+    private OrderPaymentService orderPaymentService;
 
 
     @RequestMapping("/test")
@@ -74,6 +80,21 @@ public class OrderApiController {
         }
 
         return ResponseResult.success(descVO);
+    }
+
+    /**
+     * Description:用户支付后更新订单支付状态
+    */
+    @GetMapping("/pay{id}")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseResult payUserStatus(@PathVariable String id){
+        OrderPayment orderPayment= orderPaymentService.getById(id);
+        orderPayment.setPaymentStatus(PaymentStatusEnum.TRADE_SUCCESS);
+        if (!orderPaymentService.updateById(orderPayment)){
+            return ResponseResult.failure(ResponseErrorCodeEnum.OPERATION_ERROR);
+        }
+        System.out.println("更新订单支付状态成功！"+orderPayment.getPaymentStatus());
+        return ResponseResult.success();
     }
 
     /**

@@ -1,10 +1,13 @@
 package com.example.demo.domain.vo.courier;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
@@ -13,6 +16,8 @@ import java.time.LocalDateTime;
  */
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CourierOrderVO  implements Serializable {
     /**
      * 订单号
@@ -30,6 +35,10 @@ public class CourierOrderVO  implements Serializable {
      * 收件人
      */
     private String recName;
+    /**
+     * 支付金额
+     */
+    private BigDecimal payment;
     /**
      * 收件电话
      */

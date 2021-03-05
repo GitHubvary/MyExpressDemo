@@ -554,6 +554,8 @@
                         }, function () {
                         });
                     }
+                } else {
+                    layer.msg("请先选中订单", {icon: 7});
                 }
             }
             else if (obj.event === 'delete') {
@@ -601,6 +603,8 @@
                         }, function () {
                         });
                     }
+                } else {
+                    layer.msg("请先选中订单", {icon: 7});
                 }
             }
         });

@@ -79,5 +79,14 @@ public class CourierPageController {
         return "courier/feedback";
     }
 
+    /**
+     * Description:填写反馈页面
+     */
+
+    @RequestMapping("/toFeedback")
+    public String showToFeedbackPage(@AuthenticationPrincipal User user){
+        return "user/toFeedback";
+    }
+
 
 }

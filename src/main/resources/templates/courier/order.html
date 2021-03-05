@@ -175,13 +175,13 @@
             }],
             cols: [[
                 {type: "checkbox"},
-                {field: 'id',title: '订单号'},
+                {field: 'id',title: '订单号',width:200},
                 {field: 'company', title: '快递公司'},
-                {field: 'payment', title: '订单金额'},
-                {field: 'address', title: '快递取件地址'},
-                {field: 'recAddress', title: '收件地址'},
-                {field: 'remark',title: '下单备注'},
-                {field: 'createDate', title: '下单时间'}
+                {field: 'payment', title: '订单金额(元)',align:'center'},
+                {field: 'address', title: '快递取件地址',align:'center'},
+                {field: 'recAddress', title: '收件地址',align:'center'},
+                {field: 'remark',title: '下单备注',align:'center'},
+                {field: 'createDate', title: '下单时间',width:170}
             ]],
             limits: [10, 15, 20, 25, 50, 100],
             limit: 15,
@@ -234,14 +234,12 @@
                     }
                 });
             }
-            else if (obj.event === 'remove') {
+            else if (obj.event === 'accept') {
                 let checkStatus = table.checkStatus('currentTableId');
                 if (checkStatus.data.length > 0) {
                     let ids = new Array();
                     for (let i = 0; i < checkStatus.data.length; i++) {
-                        if (checkStatus.data[i].orderStatus === 1 && checkStatus.data[i].paymentStatus === 3) {
-                            ids.push(checkStatus.data[i].id);
-                        }
+                        ids.push(checkStatus.data[i].id);
                     }
                     if (ids.length === 0) {
                         layer.msg("选中项不包含可接的订单", {icon: 0});
@@ -271,6 +269,8 @@
                             });
                         }, function () {});
                     }
+                } else {
+                    layer.msg("请先选中订单", {icon: 7});
                 }
             }
         });

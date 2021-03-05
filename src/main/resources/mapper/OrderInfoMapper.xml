@@ -27,6 +27,7 @@
             info.odd,
             info.company as company,
             info.rec_name AS rec_name,
+            payment.payment AS payment,
             info.rec_tel AS rec_tel,
             info.address AS address,
             info.rec_address AS rec_address,
