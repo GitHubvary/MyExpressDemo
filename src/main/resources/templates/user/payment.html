@@ -117,7 +117,7 @@
             <hr>
             <div class="layui-form-item " style="margin-left: 110px">
                 <div class="layui-form-label">
-                    <button type="button"  class="layui-btn" id="addBtn">确认充值</button>
+                    <button type="button" lay-submit class="layui-btn" id="addBtn">确认充值</button>
                 </div>
             </div>
         </div>
@@ -157,6 +157,10 @@
 
             $("#addBtn").on('click',function () {
                 let money = $("#money").val();
+                if (money == "") {
+                    layer.msg("必填项不能为空！", {icon: 2},500);
+                    return false;
+                }
                 sendArray(HTTP.POST, "/addMoney", {"money":money}, false, function (res) {
                     if (res.code === 0) {
                         layer.msg("充值成功！", {icon: 1},500);
@@ -164,7 +168,7 @@
                         $('#money').val("0");
                         layer.close(index);
                     } else if (res.code === 400001) {
-                        layer.msg("充值超过最大限额,请重新充值！",{icon: 2},500);
+                        layer.msg("充值超过账户限额,账户限额为100W,请重新充值！",{icon: 2},500);
                     } else if (res.code === 400003) {
                         layer.msg(res.msg,{icon:2},500);
                     }
@@ -230,7 +234,7 @@
                 return false;
             }
             if (money > 100000) {
-                layer.msg("支付金额过大!",{icon: 2},500);
+                layer.msg("支付金额过大!单次支付最高限额为10W！",{icon: 2},500);
                 return false;
             }
             sendArray(HTTP.POST, "/payMoney", {"money":money}, false, function (res) {

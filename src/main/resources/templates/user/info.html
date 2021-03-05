@@ -65,7 +65,7 @@
 
             <div class="layui-form-item">
                 <div class="layui-form-label">
-                    <button class="layui-btn layui-btn-warm" id="ModifyInfo">修改信息</button>
+                    <button class="layui-btn layui-btn-warm" id="ModifyInfo">修改手机</button>
                 </div>
                 <div class="layui-form-label">
                     <button class="layui-btn  layui-btn-disabled" lay-submit lay-filter="saveBtn" id="SaveModify" disabled>保存修改</button>
@@ -93,7 +93,7 @@
             <hr>
             <div class="layui-form-item " style="margin-left: 110px">
                 <div class="layui-form-label">
-                    <button type="button"  class="layui-btn" id="payBtn">确认支付</button>
+                    <button type="button" lay-submit class="layui-btn" id="payBtn">确认支付</button>
                 </div>
             </div>
         </div>
@@ -110,6 +110,14 @@
             layer = layui.layer,
             $ = layui.jquery;
 
+        form.verify({
+            money: function(value){ //value：表单的值、item：表单的DOM对象
+                if (!/^(?:[1-9][0-9]*(?:\.[0-9]{1,2})?|0(?:\.[0-9]{1,2})?)$/
+                    .test(value)){
+                    return '只能输入数字，小数点后只能保留两位';
+                }
+            }
+        });
 
         window.pay = function () {
             layer.open(
@@ -123,6 +131,10 @@
 
             $("#payBtn").on('click',function () {
                 let money = $("#money").val();
+                if (money==""){
+                    layer.msg("必填项不能为空！", {icon: 2},500);
+                    return false;
+                }
                 sendArray(HTTP.POST, "/addMoney", {"money":money}, false, function (res) {
                     if (res.code === 0) {
                         layer.msg("充值成功！", {icon: 1},500);

@@ -128,6 +128,9 @@ public class EventController {
         return ResponseResult.success();
     }
 
+    /**
+     * Description:充值或撤销，账户打钱
+    */
     @PostMapping("/addMoney")
     @ResponseBody
     public ResponseResult addAccount(@AuthenticationPrincipal User user,String money){
@@ -145,6 +148,9 @@ public class EventController {
         return ResponseResult.success(user.getAccount());
     }
 
+    /**
+     * Description:提现或还原，账户扣钱
+    */
     @PostMapping("/removeMoney")
     @ResponseBody
     public ResponseResult removeAccount(@AuthenticationPrincipal User user,String money){

@@ -18,8 +18,6 @@ public class JsonUtils {
 
     /**
      * 对象-->Json字符串
-     * @author jitwxs
-     * @version 创建时间：2018年4月17日 下午3:39:35
      */
     public static String objectToJson(Object data) {
         try {
@@ -32,8 +30,6 @@ public class JsonUtils {
 
     /**
      * Json字符串-->对象
-     * @author jitwxs
-     * @version 创建时间：2018年4月17日 下午3:39:45
      */
     public static <T> T jsonToObject(String jsonData, Class<T> beanType) {
         try {

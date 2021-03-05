@@ -47,8 +47,6 @@ public class OrderApiController {
      * - 管理员：任何订单
      * - 派送员：已接的单
      * - 用户：个人订单
-     * @author jitwxs
-     * @date 2019/4/25 23:36
      */
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_COURIER') or hasRole('ROLE_ADMIN')")
@@ -84,8 +82,6 @@ public class OrderApiController {
      * - 配送员：courierId = self
      * - 管理员：无限制
      * @param type 0:正常订单；1：已删除订单
-     * @author jitwxs
-     * @date 2019/4/24 22:21
      */
     @GetMapping("/list")
     @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_COURIER') or hasRole('ROLE_ADMIN')")
@@ -146,11 +142,11 @@ public class OrderApiController {
      */
     @GetMapping("/wait-list")
     @PreAuthorize("hasRole('ROLE_COURIER')")
-    public LayuiTableVO<CourierOrderVO> listWaitDistOrder(@RequestParam(required = false, defaultValue = "1") Integer current,
-                                                              @RequestParam(required = false, defaultValue = "10") Integer size,
+    public LayuiTableVO<CourierOrderVO> listWaitDistOrder(@RequestParam Integer page,
+                                                          @RequestParam Integer limit,
                                                               String startDate, String endDate, String id, @AuthenticationPrincipal User user) {
-        Page<CourierOrderVO> page = new Page<>(current, size);
-        page.setDesc("create_date");
+        Page<CourierOrderVO> courierOrderVOPage = new Page<>(page,limit);
+        courierOrderVOPage.setDesc("create_date");
 
         StringBuilder sql = new StringBuilder();
         sql.append(" AND info.status = ").append(OrderStatusEnum.WAIT_DIST.getStatus());
@@ -165,7 +161,7 @@ public class OrderApiController {
         if(StringUtils.isNotBlank(id)) {
             sql.append(" AND info.id = ").append(id);
         }
-        return orderInfoService.pageCourierOrderVO(user.getId(), page, sql.toString());
+        return orderInfoService.pageCourierOrderVO(user.getId(), courierOrderVOPage, sql.toString());
     }
 
     /**

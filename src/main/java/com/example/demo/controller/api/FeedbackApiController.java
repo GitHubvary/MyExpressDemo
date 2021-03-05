@@ -40,8 +40,8 @@ public class FeedbackApiController {
      */
     @GetMapping("/list")
     public LayuiTableVO<UserFeedbackVO> listSelfFeedback(@AuthenticationPrincipal User user,
-                                                         @RequestParam(required = false, defaultValue = "1") Integer current,
-                                                         @RequestParam(required = false, defaultValue = "10") Integer size,
+                                                         @RequestParam Integer page,
+                                                         @RequestParam Integer limit,
                                                          String type, String status, String id,
                                                          @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
                                                          @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate
@@ -52,8 +52,8 @@ public class FeedbackApiController {
         else {
             System.out.println("/feedback/list：user为空");
         }
-        Page<UserFeedback> page = new Page<>(current, size);
-        page.setDesc("create_date");
+        Page<UserFeedback> feedbackPage = new Page<>(page,limit);
+        feedbackPage.setDesc("create_date");
         QueryWrapper<UserFeedback> wrapper = new QueryWrapper<>();
 
         Integer feedStatus = StringUtils.toInteger(status, -1);
@@ -84,14 +84,12 @@ public class FeedbackApiController {
                 break;
         }
 
-        return userFeedbackService.pageUserFeedbackVO(page, wrapper);
+        return userFeedbackService.pageUserFeedbackVO(feedbackPage, wrapper);
     }
 
     /**
      * 获取配送员需要处理反馈列表
      * 所有无人处理，或者处理人是当前用户，且创建人非当前用户的订单反馈
-     * @author jitwxs
-     * @date 2019/4/25 22:58
      */
     @GetMapping("/handle-list")
     @PreAuthorize("hasRole('ROLE_COURIER')")
@@ -129,8 +127,6 @@ public class FeedbackApiController {
     /**
      * 创建反馈记录
      * - 仅支持 配送员 & 普通用户
-     * @author jitwxs
-     * @date 2019/4/23 23:13
      */
     @PostMapping("")
     @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_COURIER')")
@@ -164,8 +160,6 @@ public class FeedbackApiController {
     /**
      * 批量撤销反馈，仅能撤销个人反馈
      * 状态为等待处理
-     * @author jitwxs
-     * @date 2019/4/25 0:11
      */
     @PostMapping("/batch-cancel")
     @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_COURIER')")
