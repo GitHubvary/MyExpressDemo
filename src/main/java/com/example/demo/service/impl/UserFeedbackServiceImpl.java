@@ -100,7 +100,10 @@ public class UserFeedbackServiceImpl extends ServiceImpl<UserFeedbackMapper, Use
                 LocalDateTime.of(LocalDate.now(), LocalTime.MIDNIGHT), LocalDateTime.now()));
 
         Integer waitCount = userFeedbackMapper.selectCount(new QueryWrapper<UserFeedback>().eq("status", FeedbackStatusEnum.WAIT.getStatus()));
-
+        Integer totalCount = userFeedbackMapper.selectCount(null);
+        Integer processCount = userFeedbackMapper.selectCount(new QueryWrapper<UserFeedback>().eq("status", FeedbackStatusEnum.PROCESS.getStatus()));
+        map.put("process",processCount);
+        map.put("total",totalCount);
         map.put("today", todayCount);
         map.put("wait", waitCount);
         return map;
@@ -109,8 +112,8 @@ public class UserFeedbackServiceImpl extends ServiceImpl<UserFeedbackMapper, Use
     @Override
     public Map<String, Integer> getUserDashboardData(String userId) {
         Map<String, Integer> map = new HashMap<>();
-        Integer waitCount = userFeedbackMapper.selectCount(new QueryWrapper<UserFeedback>().eq("status", FeedbackStatusEnum.WAIT.getStatus()));
-        Integer processCount = userFeedbackMapper.selectCount(new QueryWrapper<UserFeedback>().eq("status", FeedbackStatusEnum.PROCESS.getStatus()));
+        Integer waitCount = userFeedbackMapper.selectCount(new QueryWrapper<UserFeedback>().eq("status", FeedbackStatusEnum.WAIT.getStatus()).eq("user_id", userId));
+        Integer processCount = userFeedbackMapper.selectCount(new QueryWrapper<UserFeedback>().eq("status", FeedbackStatusEnum.PROCESS.getStatus()).eq("user_id", userId));
 
         map.put("wait", waitCount);
         map.put("process", processCount);

@@ -17,6 +17,7 @@ import com.example.demo.domain.vo.courier.CourierOrderVO;
 import com.example.demo.domain.vo.user.OrderDescVO;
 import com.example.demo.domain.vo.user.UserOrderVO;
 import com.example.demo.mapper.OrderInfoMapper;
+import com.example.demo.mapper.OrderPaymentMapper;
 import com.example.demo.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -42,6 +43,9 @@ import java.util.Map;
 public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo> implements OrderInfoService {
     @Autowired
     private OrderInfoMapper orderInfoMapper;
+
+    @Autowired
+    private OrderPaymentMapper orderPaymentMapper;
 
     @Autowired
     private UserService userService;
@@ -454,9 +458,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         List<OrderInfo> list = orderInfoMapper.selectList(new QueryWrapper<OrderInfo>().between("create_date",
                 LocalDateTime.of(LocalDate.now(), LocalTime.MIDNIGHT), LocalDateTime.now()));
 
+
+        Integer totalCount = orderInfoMapper.selectCount(null);
         Integer waitCount = orderInfoMapper.selectCount(new QueryWrapper<OrderInfo>().eq("status", OrderStatusEnum.WAIT_DIST.getStatus()));
         Integer transportCount = orderInfoMapper.selectCount(new QueryWrapper<OrderInfo>().eq("status", OrderStatusEnum.TRANSPORT.getStatus()));
 
+        map.put("total",totalCount);
         map.put("today", list.size());
         map.put("wait", waitCount);
         map.put("transport", transportCount);
@@ -498,12 +505,16 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     public Map<String, Integer> getCourierDashboardData(String courierId) {
         Map<String, Integer> map = new HashMap<>();
 
-        Integer waitCount = orderInfoMapper.selectCount(new QueryWrapper<OrderInfo>()
+        Integer waitOrderCount = orderInfoMapper.selectCount(new QueryWrapper<OrderInfo>()
                 .eq("status", OrderStatusEnum.WAIT_DIST.getStatus()));
 
-        Integer transportCount = orderInfoMapper.selectCount(new QueryWrapper<OrderInfo>()
-                .eq("user_id", courierId).eq("status", OrderStatusEnum.TRANSPORT.getStatus()));
+        Integer waitPayCount = orderPaymentMapper.selectCount(new QueryWrapper<OrderPayment>()
+                .eq("status", PaymentStatusEnum.WAIT_BUYER_PAY.getStatus()));
 
+        Integer waitCount = waitOrderCount - waitPayCount;
+        Integer transportCount = orderInfoMapper.selectCount(new QueryWrapper<OrderInfo>()
+                .eq("status", OrderStatusEnum.TRANSPORT.getStatus()).eq("courier_id", courierId));
+        System.out.println(transportCount);
         map.put("wait", waitCount);
         map.put("transport", transportCount);
 

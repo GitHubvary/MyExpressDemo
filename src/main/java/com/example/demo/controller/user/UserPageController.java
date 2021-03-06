@@ -4,6 +4,8 @@ import com.example.demo.domain.bean.OrderInfo;
 import com.example.demo.domain.bean.User;
 import com.example.demo.domain.vo.user.UserInfoVO;
 import com.example.demo.service.DataCompanyService;
+import com.example.demo.service.OrderInfoService;
+import com.example.demo.service.UserFeedbackService;
 import com.example.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -30,6 +32,12 @@ public class UserPageController {
     @Autowired
     private DataCompanyService dataCompanyService;
 
+    @Autowired
+    private OrderInfoService orderInfoService;
+
+    @Autowired
+    private UserFeedbackService feedbackService;
+
 
     @RequestMapping("/main")
     public String showUserPage(@AuthenticationPrincipal User user, ModelMap map){
@@ -44,7 +52,13 @@ public class UserPageController {
      */
     @RequestMapping("/dashboard")
     public String showDashboardPage(@AuthenticationPrincipal User user, ModelMap map) {
-        Map<String, Integer> data = userService.getAdminDashboardData();
+        Map<String, Integer> data1 = orderInfoService.getUserDashboardData(user.getId());
+        Map<String, Integer> data2 = feedbackService.getUserDashboardData(user.getId());
+        map.put("waitPayment",data1.get("waitPayment")); //未支付订单
+        map.put("waitOrder",data1.get("wait"));  //等待接单订单
+        map.put("transportOrder",data1.get("transport")); //正在配送订单
+        map.put("processFeedback",data2.get("process")); //正在处理反馈
+        map.put("waitFeedback",data2.get("wait")); //等待处理反馈
         return "user/dashboard";
     }
 

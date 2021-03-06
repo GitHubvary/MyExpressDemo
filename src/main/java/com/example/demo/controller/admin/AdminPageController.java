@@ -5,6 +5,8 @@ import com.example.demo.domain.ResponseResult;
 import com.example.demo.domain.bean.User;
 import com.example.demo.domain.enums.ResponseErrorCodeEnum;
 import com.example.demo.domain.vo.user.UserInfoVO;
+import com.example.demo.service.OrderInfoService;
+import com.example.demo.service.UserFeedbackService;
 import com.example.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -30,6 +32,10 @@ public class AdminPageController {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private OrderInfoService orderInfoService;
+    @Autowired
+    private UserFeedbackService feedbackService;
 
 
     @RequestMapping("/main")
@@ -55,6 +61,20 @@ public class AdminPageController {
         map.put("userTotalCount", data.get("total"));
         map.put("userDisableCount", data.get("disEnable"));
         map.put("userLockCount", data.get("lock"));
+
+        Map<String, Integer> data1 = orderInfoService.getAdminDashboardData();
+
+        map.put("orderTodayCount", data1.get("today"));
+        map.put("orderTotalCount", data1.get("total"));
+        map.put("orderWaitCount", data1.get("wait"));
+        map.put("orderTransportCount", data1.get("transport"));
+
+        Map<String, Integer> data2 = feedbackService.getAdminDashboardData();
+
+        map.put("feedbackTodayCount", data2.get("today"));
+        map.put("feedbackTotalCount", data2.get("total"));
+        map.put("feedbackWaitCount", data2.get("wait"));
+        map.put("feedbackProcessCount", data2.get("process"));
 
         return "admin/dashboard";
     }

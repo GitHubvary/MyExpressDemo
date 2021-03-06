@@ -27,16 +27,10 @@
                         <div class="panel-body">
                             <div class="panel-title">
                                 <span class="label pull-right layui-bg-blue">实时</span>
-                                <h5>用户统计</h5>
+                                <h3>等待接单数</h3>
                             </div>
                             <div class="panel-content">
-                                <h1 class="no-margins">1234</h1>
-                                <div class="stat-percent font-bold text-gray"><i class="fa fa-commenting"></i>
-                                    <p ></p>
-                                    <p ></p>
-                                    <p ></p>
-                                </div>
-                                <small>当前分类总记录数</small>
+                                <h1 class="no-margins" th:text="${waitOrder}">1234</h1>
                             </div>
                         </div>
                     </div>
@@ -50,12 +44,10 @@
                         <div class="panel-body">
                             <div class="panel-title">
                                 <span class="label pull-right layui-bg-orange">实时</span>
-                                <h5>订单统计</h5>
+                                <h5>正在配送订单数</h5>
                             </div>
                             <div class="panel-content">
-                                <h1 class="no-margins">1234</h1>
-                                <div class="stat-percent font-bold text-gray"><i class="fa fa-commenting"></i> 1234</div>
-                                <small>当前分类总记录数</small>
+                                <h1 class="no-margins" th:text="${transportOrder}">1234</h1>
                             </div>
                         </div>
                     </div>
@@ -69,12 +61,10 @@
                         <div class="panel-body">
                             <div class="panel-title">
                                 <span class="label pull-right layui-bg-cyan">实时</span>
-                                <h5>反馈统计</h5>
+                                <h5>等待处理反馈数</h5>
                             </div>
                             <div class="panel-content">
-                                <h1 class="no-margins">1234</h1>
-                                <div class="stat-percent font-bold text-gray"><i class="fa fa-commenting"></i> 1234</div>
-                                <small>当前分类总记录数</small>
+                                <h1 class="no-margins" th:text="${waitFeedback}">1234</h1>
                             </div>
                         </div>
                     </div>
@@ -83,6 +73,21 @@
 
         </div>
     </div>
+
+    <div class="layui-box">
+        <div class="layui-row layui-col-space10">
+            <div class="layui-col-md12">
+                <blockquote class="layui-elem-quote main_btn">
+                    <p>欢迎使用快递代拿系统！</p>
+                    <p>配送员功能：</p>
+                    <p>（1）接单配送：查看所有支付成功且等待接单的订单，接单配送。</p>
+                    <p>（2）订单管理：查看历史订单，分类查询，完成或异常订单</p>
+                    <p>（3）反馈管理：展示反馈列表，分类查询反馈，填写提交反馈。</p>
+                </blockquote>
+            </div>
+        </div>
+    </div>
+
 </div>
 <script th:src="@{/layui/layui.js}" src="../../static/layui/layui.js" charset="utf-8"></script>
 </body>
