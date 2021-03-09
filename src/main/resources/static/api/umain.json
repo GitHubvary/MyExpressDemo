@@ -44,6 +44,11 @@
           "href": "/user/recycle",
           "icon": "fa fa-trash-o",
           "target": "_self"
+        },{
+          "title": "历史评价",
+          "href": "/user/evaluate",
+          "icon": "fa fa-file-text-o",
+          "target": "_self"
         }
       ]
     }

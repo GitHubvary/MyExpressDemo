@@ -130,4 +130,13 @@ public class UserPageController {
         return "user/payment";
     }
 
+    /**
+     * 评价中心页面
+     */
+    @RequestMapping("/evaluate")
+    public String showEvaluate() {
+
+        return "user/evaluate";
+    }
+
 }

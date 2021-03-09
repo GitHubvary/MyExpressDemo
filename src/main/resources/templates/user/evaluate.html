@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}" href="../../static/layui/css/layui.css" media="all">
+    <link rel="stylesheet" th:href="@{/css/public.css}" href="../../static/css/public.css" media="all">
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main" id="evaluateList">
+    </div>
+</div>
+<script th:src="@{/js/jquery-3.4.1/jquery-3.4.1.min.js}" src="../../static/js/jquery-3.4.1/jquery-3.4.1.min.js" charset="utf-8" type="text/javascript"></script>
+<script th:src="@{/layui/layui.js}" src="../../static/layui/layui.js" charset="utf-8"></script>
+<script th:src="@{/js/lay-config.js}" src="../../static/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
+<script th:src="@{/js/http.js}" src="../../static/js/http.js"></script>
+<script  type="text/javascript" th:inline="javascript">
+    var current = 1, page;
+    $(function () {
+        loadData();
+    });
+
+    function loadData() {
+        // 加载评价数据
+        sendJson(HTTP.GET, "/evaluate/list", {"current": current}, false, function (res) {
+            if(res.code === 0) {
+                let html = '';
+                let data = res.data.record;
+                if (data == null || data == ""){
+                    html += '你从未进行过任何评价，请评价订单。'
+                }
+                for(let i = 0; i<data.length; i++) {
+                    html += '<ul>\n' +
+                        '                        <li>\n' +
+                        '                            <label class="layui-form-label">评分：</label><div class="layui-input-block"><p class="layui-form-label-col">'+data[i].score+'星</p></div> \n' +
+                        '                         <label class="layui-form-label">订单号：</label><div class="layui-input-block"><p class="layui-form-label-col" style="color: #ff8559">'+data[i].orderId+'</p></div>\n' +
+                        '                         <label class="layui-form-label">配送员：</label><div class="layui-input-block"><p class="layui-form-label-col" style="color: #ff8559">'+data[i].courierName+'</p></div>\n' +
+                        '                         <label class="layui-form-label">评价内容：</label><div class="layui-input-block"><p class="layui-form-label-col">'+data[i].evaluate+'</p></div>\n' +
+                        '                        </li>\n' +
+                        '                    </ul><hr class="layui-bg-orange">';
+                }
+                $("#evaluateList").html(html);
+            } else {
+                layer.msg(res.msg, {icon:2});
+            }
+        }, function () {
+            layer.msg("没有任何评价",{icon:2});
+        });
+    }
+</script>
+</body>
+</html>

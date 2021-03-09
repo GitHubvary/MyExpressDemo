@@ -110,5 +110,13 @@ public class CourierPageController {
         return "user/toFeedback";
     }
 
+    /**
+     * 评价中心页面
+     */
+    @RequestMapping("/evaluate")
+    public String showEvaluate() {
+        return "courier/evaluate";
+    }
+
 
 }

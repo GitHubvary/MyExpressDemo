@@ -38,6 +38,11 @@
           "href": "/courier/feedback",
           "icon": "fa fa-file-text-o",
           "target": "_self"
+        },{
+          "title": "历史评价",
+          "href": "/courier/evaluate",
+          "icon": "fa fa-file-text-o",
+          "target": "_self"
         }
       ]
     }

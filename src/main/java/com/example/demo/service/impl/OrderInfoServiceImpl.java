@@ -362,6 +362,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
             orderInfo.setCourierId(userId);
             orderInfo.setOrderStatus(OrderStatusEnum.TRANSPORT);
+            orderInfo.setCourierTel(userService.getById(userId).getTel());
             if(this.retBool(orderInfoMapper.updateById(orderInfo))) {
                 success++;
             }
@@ -396,8 +397,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             return ResponseResult.success();
         }
 
-        // 如果原始订单状态为配送中，开启订单评价
-        if(originStatus == OrderStatusEnum.TRANSPORT) {
+        // 如果原始订单状态为配送中或异常，开启订单评价
+        if(originStatus == OrderStatusEnum.TRANSPORT || originStatus == OrderStatusEnum.ERROR) {
             if(!orderEvaluateService.changEvaluateStatus(orderId, true)) {
                 transactionManager.rollback(status);
                 return ResponseResult.failure(ResponseErrorCodeEnum.OPEN_EVALUATE_ERROR);

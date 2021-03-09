@@ -190,17 +190,43 @@
         </div>
     </div>
 
-
+    <!--评价模态框-->
+    <div class="layuimini-container" id="evaluateModel" style="display: none">
+        <div class="layuimini-main">
+            <div class="layui-form layuimini-form">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">配送评分</label>
+                    <input type="hidden" id="inputOrderEvaluate">
+                <div  id="orderRate"></div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">评价内容</label>
+                    <div class="layui-col-md6">
+                    <textarea id="inputEvaluateContent" name="content" required lay-verify="required" placeholder="给配送员一个评价吧~" autocomplete="off"
+                              class="layui-textarea" onkeyup="this.value=this.value.replace(/\s+/g,'')"></textarea>
+                    </div>
+                </div>
+                <div class="layui-form-item" style="margin-left: 110px">
+                    <div class="layui-form-label">
+                        <button type="button" lay-submit class="layui-btn" id="evaluateBtn">提交评价</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+
 <script th:src="@{/layui/layui.js}" src="../../static/layui/layui.js" charset="utf-8"></script>
 <script th:src="@{/js/jquery-3.4.1/jquery-3.4.1.min.js}" src="../../static/js/jquery-3.4.1/jquery-3.4.1.min.js" charset="utf-8" type="text/javascript"></script>
 <script th:src="@{/js/http.js}" src="../../static/js/http.js"></script>
 <script  type="text/javascript"  th:inline="none">
-    layui.use(['form', 'table','layer'], function () {
+    layui.use(['form', 'table','layer','rate'], function () {
         var $ = layui.jquery,
             form = layui.form,
             table = layui.table,
-            layer = layui.layer;
+            layer = layui.layer,
+            rate = layui.rate;
 
         table.render({
             elem: '#currentTableId',
@@ -251,7 +277,7 @@
 
                         // 订单评价
                         if(value.canScore === "1") {
-                            result += '<button class="layui-btn layui-btn-sm layui-btn-normal" onclick="" title="评价">评价</button>\n';
+                            result += '<button class="layui-btn layui-btn-sm layui-btn-normal" onclick="showEvaluate('+id+')" title="评价">评价</button>\n';
                         }
 
                         return result;
@@ -273,6 +299,65 @@
             },
             skin: 'line'
         });
+
+        rate.render(
+            {
+                elem: '#orderRate',
+                text:true,
+                setText:  function(value) {
+                    var arrs = {
+                        '0': '未评分',
+                        '1': '极差',
+                        '2': '差',
+                        '3': '中等',
+                        '4': '好',
+                        '5': '五星好评'
+                    };
+                    this.span.text(arrs[value]);
+                },
+                choose: function (value) {
+                    $('#inputOrderEvaluate').val(value);
+                }
+            });
+
+
+
+
+        window.showEvaluate = function(id) {
+            layer.open(
+                {
+                    type:1,
+                    title:"订单评价",
+                    area:['500px','290px'],
+                    content:$('#evaluateModel')
+                }
+            );
+            $('#evaluateBtn').on('click',function () {
+                var rate = $("#inputOrderEvaluate").val();
+                var evaluate = $("#inputEvaluateContent").val();
+                console.log(id);
+                if (id == null || id === '') {
+                    layer.msg("评分异常，请重试", {icon: 7});
+                    return false;
+                }
+                if (rate == null || rate === ''){
+                    layer.msg("未评分,请评分", {icon: 7});
+                    return false;
+                }
+                layer.msg(rate + " " +id+ " " +evaluate);
+                sendJson(HTTP.POST, "/user/evaluate/" + id, {"score": rate, "evaluate": evaluate}, false, function (res) {
+                    if (res.code === 0) {
+                        layer.msg("评价成功！", {icon: 1},500);
+                        layer.closeAll();
+                        window.setTimeout("location.reload();", 1000);
+                    } else {
+                        layer.msg(res.msg, {icon: 2});
+                    }
+                }, function () {
+                    layer.msg("未知错误", {icon: 2});
+                });
+            });
+        };
 
         window.payOrder = function (id) {
             //获取支付金额
@@ -335,7 +420,7 @@
 
                     // 初始化模态框信息
                     let data = res.data;
-                    console.log("查看订单"+res.data);
+                    console.log("查看订单配送员电话"+res.data.courierTel);
                     $("#inputInfoId").text(data.orderId);
                     $("#inputInfoName").text(data.recName);
                     $("#inputInfoTel").text(data.recTel);

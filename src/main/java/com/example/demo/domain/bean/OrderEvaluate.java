@@ -43,14 +43,7 @@ public class OrderEvaluate {
      * 用户ID
      */
     private String courierId;
-    /**
-     * 用户评分
-     */
-    private BigDecimal courierScore;
-    /**
-     * 用户评价
-     */
-    private String courierEvaluate;
+
 
     @Version
     private Integer version;

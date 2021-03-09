@@ -10,9 +10,11 @@ import com.example.demo.domain.enums.UserRoleEnum;
 import com.example.demo.domain.vo.LayuiTableVO;
 import com.example.demo.domain.vo.admin.AdminUserInfoVO;
 import com.example.demo.mapper.UserMapper;
+import com.example.demo.service.OrderEvaluateService;
 import com.example.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -34,6 +36,9 @@ public class UserApiController {
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private OrderEvaluateService orderEvaluateService;
 
     /**
      * 获取用户列表
@@ -173,6 +178,24 @@ public class UserApiController {
         System.out.println("加载快递员列表："+result);
 
         return ResponseResult.success(result);
+    }
+
+
+    @PostMapping("/evaluate/{orderId}")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseResult orderEvaluate(@PathVariable String orderId, String score,
+                                        String evaluate, @AuthenticationPrincipal User user) {
+        double evaluateScore = StringUtils.toDouble(score, -1D);;
+        if(evaluateScore == -1) {
+            return ResponseResult.failure(ResponseErrorCodeEnum.EVALUATE_SCORE_ERROR);
+        }
+
+        switch (user.getRole()) {
+            case USER:
+                return orderEvaluateService.userEvaluate(orderId, user.getId(), evaluateScore, evaluate);
+            default:
+                return ResponseResult.failure(ResponseErrorCodeEnum.NO_PERMISSION);
+        }
     }
 
 

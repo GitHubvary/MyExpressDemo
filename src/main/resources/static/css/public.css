@@ -21,6 +21,11 @@ body {
     /*box-shadow: 0 0 10px 3px orange;*/
 }
 
+#evaluateList {
+    border-radius: 2px;
+    border: 2px solid #FFB800;
+}
+
 a {
     color: #0000FF;
     text-decoration: underline

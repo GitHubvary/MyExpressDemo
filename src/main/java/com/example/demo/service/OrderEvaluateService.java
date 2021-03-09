@@ -17,7 +17,6 @@ public interface OrderEvaluateService extends IService<OrderEvaluate> {
 
     ResponseResult userEvaluate(String orderId, String userId, double score, String text);
 
-    ResponseResult courierEvaluate(String orderId, String courierId, double score, String text);
 
     int countEvaluate(String userId, UserRoleEnum roleEnum);
 }

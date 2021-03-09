@@ -183,7 +183,7 @@
         <div class="layui-form layuimini-form">
             <div class="layui-form-item layui-row">
                 <label class="layui-form-label">支付码:</label>
-                <div class="layui-col-md6">
+                <div class="layui-col-md5">
                     <input type="text" id="paymentId" required lay-verify="required" placeholder="请输入支付码完成订单获取酬金" autocomplete="off"
                            class="layui-input"  onkeyup="this.value=this.value.replace(/\s+/g,'')" style="width: 200px;">
                 </div>
@@ -246,10 +246,10 @@
                         let id = "'" + value.id + "'";
                         let result = '<button class="layui-btn layui-btn-sm" onclick="showDetail('+id+')" title="查看">查看</button>\n';
 
-                        // 订单评价
-                        if(value.canScore === "1") {
-                            result += '<button class="layui-btn layui-btn-sm layui-btn-normal" onclick="" title="评价">评价</button>\n';
-                        }
+                        // // 订单评价
+                        // if(value.canScore === "1") {
+                        //     result += '<button class="layui-btn layui-btn-sm layui-btn-normal" onclick="" title="评价">评价</button>\n';
+                        // }
 
                         return result;
                     }
@@ -366,7 +366,7 @@
                             {
                                 type:1,
                                 title:"完成订单",
-                                area:['450px','200px'],
+                                area:['600px','200px'],
                                 content:$('#finishOrder')
                             }
                         );

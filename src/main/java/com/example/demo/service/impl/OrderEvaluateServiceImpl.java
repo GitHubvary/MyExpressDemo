@@ -85,18 +85,13 @@ public class OrderEvaluateServiceImpl extends ServiceImpl<OrderEvaluateMapper, O
             return false;
         }
 
-        // 只支持用户、快递员，查询自己订单是否可以评价
+        // 只支持用户，查询自己订单是否可以评价
         if(roleEnum == UserRoleEnum.USER) {
             if(!orderInfoService.isUserOrder(orderId, userId)) {
                 return false;
             }
             return evaluate.getUserScore() == null;
 
-        } else if(roleEnum == UserRoleEnum.COURIER) {
-            if(!orderInfoService.isCourierOrder(orderId, userId)) {
-                return false;
-            }
-            return evaluate.getCourierScore() == null;
         }
 
         return false;
@@ -144,10 +139,6 @@ public class OrderEvaluateServiceImpl extends ServiceImpl<OrderEvaluateMapper, O
         evaluate.setUserEvaluate(text);
         evaluate.setUserDate(LocalDateTime.now());
 
-        // 判断对方是否评分，如果评分过，关闭评分
-        if(evaluate.getCourierScore() != null) {
-            evaluate.setHasOpen(false);
-        }
 
         // 设置对方的ID
         if(StringUtils.isBlank(evaluate.getCourierId())) {
@@ -170,68 +161,6 @@ public class OrderEvaluateServiceImpl extends ServiceImpl<OrderEvaluateMapper, O
         return ResponseResult.success();
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
-    @Override
-    public ResponseResult courierEvaluate(String orderId, String courierId, double score, String text) {
-        DefaultTransactionDefinition definition = new DefaultTransactionDefinition();
-        TransactionStatus status = transactionManager.getTransaction(definition);
-
-        // 校验评分
-        if(!isLegalScore(score)) {
-            return ResponseResult.failure(ResponseErrorCodeEnum.EVALUATE_SCORE_ERROR);
-        }
-
-        OrderEvaluate evaluate = super.getById(orderId);
-
-        // 未开启评分
-        if(!evaluate.getHasOpen()) {
-            return ResponseResult.failure(ResponseErrorCodeEnum.ORDER_NOT_OPEN_EVALUATE);
-        }
-        // 是否有权限
-        if(!orderInfoService.isCourierOrder(orderId, courierId)) {
-            return ResponseResult.failure(ResponseErrorCodeEnum.NO_PERMISSION);
-        }
-        // 已评分
-        if(evaluate.getCourierScore() != null) {
-            return ResponseResult.failure(ResponseErrorCodeEnum.ORDER_ALREADY_EVALUATE);
-        }
-
-        // text超过最大
-        if(StringUtils.isNotBlank(text) && text.length() > 255) {
-            return ResponseResult.failure(ResponseErrorCodeEnum.STR_LENGTH_OVER, new Object[]{"评价", 255});
-        }
-
-        /* 订单评分 */
-        evaluate.setCourierId(courierId);
-        evaluate.setCourierScore(new BigDecimal(score));
-        evaluate.setCourierEvaluate(text);
-        evaluate.setCourierDate(LocalDateTime.now());
-
-        // 判断对方是否评分，如果评分过，关闭评分
-        if(evaluate.getUserScore() != null) {
-            evaluate.setHasOpen(false);
-        }
-
-        // 设置对方的ID
-        if(StringUtils.isBlank(evaluate.getUserId())) {
-            OrderInfo orderInfo = orderInfoService.getById(orderId);
-            evaluate.setUserId(orderInfo.getUserId());
-        }
-
-        if(!this.retBool(orderEvaluateMapper.updateById(evaluate))) {
-            transactionManager.rollback(status);
-            return ResponseResult.failure(ResponseErrorCodeEnum.ORDER_EVALUATE_ERROR);
-        }
-
-        /* 更新普通用户的评分 */
-        if(!userEvaluateService.updateEvaluate(orderId, score, UserRoleEnum.USER)) {
-            transactionManager.rollback(status);
-            return ResponseResult.failure(ResponseErrorCodeEnum.SCORE_UPDATE_ERROR);
-        }
-
-        transactionManager.commit(status);
-        return ResponseResult.success();
-    }
 
     @Override
     public int countEvaluate(String userId, UserRoleEnum roleEnum) {
