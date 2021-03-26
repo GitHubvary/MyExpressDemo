@@ -310,7 +310,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             if(!userId.equals(orderInfo.getUserId())) {
                 continue;
             }
-            if (orderInfo.getOrderStatus() != OrderStatusEnum.WAIT_DIST) {
+            if (orderInfo.getOrderStatus() != OrderStatusEnum.WAIT_DIST && orderInfo.getOrderStatus() != OrderStatusEnum.ERROR) {
                 continue;
             }
             if(manualDelete(orderId, 1, OrderDeleteEnum.CANCEL.getType())) {

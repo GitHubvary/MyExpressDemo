@@ -142,6 +142,7 @@ public class EventController {
             return ResponseResult.failure(ResponseErrorCodeEnum.PARAMETER_ERROR);
         }
         user.setAccount(account);
+        System.out.println(user.getUsername()+"加钱："+user.getAccount());
         if (!userService.updateById(user)){
             return ResponseResult.failure(ResponseErrorCodeEnum.OPERATION_ERROR);
         }

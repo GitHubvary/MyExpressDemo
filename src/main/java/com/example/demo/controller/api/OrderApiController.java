@@ -332,7 +332,7 @@ public class OrderApiController {
 
     /**
      * 用户批量撤销订单，仅能撤销个人订单
-     * 状态为未接单
+     * 状态为未接单或异常
      */
     @PostMapping("/batch-cancel")
     @PreAuthorize("hasRole('ROLE_USER')")

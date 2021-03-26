@@ -79,8 +79,8 @@
             <div class="layui-row layui-col-space10">
                 <div class="layui-col-md12">
                     <blockquote class="layui-elem-quote main_btn">
-                        <p><strong>撤销订单：</strong>  订单状态需为 【等待接单】 </p>
-                        <p><strong>删除订单：</strong> 【订单完成】 或 【订单异常】</p>
+                        <p><strong>撤销订单：</strong>  订单状态需为 【等待接单】 或 【订单异常】</p>
+                        <p><strong>删除订单：</strong>  订单状态需为 【订单完成】 或 【订单异常】</p>
                     </blockquote>
                 </div>
             </div>
@@ -276,7 +276,7 @@
                         }
 
                         // 订单评价
-                        if(value.canScore === "1") {
+                        if(value.canScore === "1" && value.orderStatus === 3) {
                             result += '<button class="layui-btn layui-btn-sm layui-btn-normal" onclick="showEvaluate('+id+')" title="评价">评价</button>\n';
                         }
 
@@ -540,7 +540,7 @@
                     let ids = new Array();
                     let totalMoney = 0;
                     for (let i = 0; i < checkStatus.data.length; i++) {
-                        if (checkStatus.data[i].orderStatus === 1) {
+                        if (checkStatus.data[i].orderStatus === 1 || checkStatus.data[i].orderStatus === 4) {
                             ids.push(checkStatus.data[i].id);
                             totalMoney += checkStatus.data[i].payment;
                         }
